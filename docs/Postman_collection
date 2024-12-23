@@ -1,0 +1,1532 @@
+{
+	"info": {
+		"_postman_id": "1e291cc1-c033-43b5-b135-b59e61311b63",
+		"name": "Desafio Backend",
+		"description": "ESTE ES MI DESFAIO JEIFJAEIJRIAJSRIASJI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "9315621"
+	},
+	"item": [
+		{
+			"name": "Usuarios",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-backend}}/api/users/list",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-backend}}/api/users/1",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"1"
+							],
+							"query": [
+								{
+									"key": "password",
+									"value": "paloma",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"correo_electronico\": \"jpinedaespino@gmail.com\",\r\n    \"nombre_completo\": \"Juan Pineda\",\r\n    \"password\": \"admin-pass#\",\r\n    \"fecha_nacimiento\": \"2005-04-05\",\r\n    \"telefono\": \"36074992\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-backend}}/api/users/",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"users",
+								""
+							],
+							"query": [
+								{
+									"key": "password",
+									"value": "paloma",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Usuario",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"correo_electronico\": \"actualizado@hola.com\",\r\n    \"nombre_completo\": \"Prueba validator actualizado\",\r\n    \"password\": \"abcde\",\r\n    \"fecha_nacimiento\": \"2000-12-30\",\r\n    \"idRol\": 2,\r\n    \"idEstado\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-backend}}/api/users/2",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"2"
+							],
+							"query": [
+								{
+									"key": "password",
+									"value": "paloma",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api-backend}}/api/users/2",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"2"
+							],
+							"query": [
+								{
+									"key": "password",
+									"value": "paloma",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Productos",
+			"item": [
+				{
+					"name": "Get All",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\": \"Producto Actualizado\",\r\n    \"marca\": \"Marca random\",\r\n    \"codigo\": \"PR001\",\r\n    \"stock\": \"100\",\r\n    \"precio\": 399.50,\r\n    \"imagen_url\": \"url\",\r\n    \"idCategoria\": \"1\",\r\n    \"idEstado\": \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-backend}}/api/products/list",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\": \"Producto Actualizado\",\r\n    \"marca\": \"Marca random\",\r\n    \"codigo\": \"PR001\",\r\n    \"stock\": \"100\",\r\n    \"precio\": 399.50,\r\n    \"imagen_url\": \"url\",\r\n    \"idCategoria\": \"1\",\r\n    \"idEstado\": \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-backend}}/api/products/2",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Producto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\": \"Producto Actualizado\",\r\n    \"marca\": \"Marca random\",\r\n    \"codigo\": \"PR001\",\r\n    \"stock\": \"100\",\r\n    \"precio\": 399.50,\r\n    \"imagen_url\": \"url\",\r\n    \"idCategoria\": \"1\",\r\n    \"idEstado\": \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-backend}}/api/products/3",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Producto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\": \"Producto Actualizado\",\r\n    \"marca\": \"Marca random\",\r\n    \"codigo\": \"PR001\",\r\n    \"stock\": \"100\",\r\n    \"precio\": 399.50,\r\n    \"imagen_url\": \"url\",\r\n    \"idCategoria\": \"1\",\r\n    \"idEstado\": \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-backend}}/api/products/2",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateProducto",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\": \"Producto eliminar\",\r\n    \"marca\": \"Marca randoXm\",\r\n    \"codigo\": \"PR001\",\r\n    \"stock\": \"100\",\r\n    \"precio\": 399.50,\r\n    \"imagen_url\": \"url\",\r\n    \"idCategoria\": \"1\",\r\n    \"idEstado\": \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-backend}}/api/products",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"products"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Clientes",
+			"item": [
+				{
+					"name": "Get All",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\": \"Producto Actualizado\",\r\n    \"marca\": \"Marca random\",\r\n    \"codigo\": \"PR001\",\r\n    \"stock\": \"100\",\r\n    \"precio\": 399.50,\r\n    \"imagen_url\": \"url\",\r\n    \"idCategoria\": \"1\",\r\n    \"idEstado\": \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-backend}}/api/customers/list",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"customers",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\": \"Producto Actualizado\",\r\n    \"marca\": \"Marca random\",\r\n    \"codigo\": \"PR001\",\r\n    \"stock\": \"100\",\r\n    \"precio\": 399.50,\r\n    \"imagen_url\": \"url\",\r\n    \"idCategoria\": \"1\",\r\n    \"idEstado\": \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-backend}}/api/customers/2",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"customers",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Cliente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"razon_social\": \"Otra Razon social prueba\",\r\n    \"nombre_comercial\": \"Otra Comercial prueba\",\r\n    \"direccion_entrega\": \"Otra Direccion inventada\",\r\n    \"telefono\": \"123487498\",\r\n    \"correo_electronico\": \"clientexxs@correo.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-backend}}/api/customers/",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"customers",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Cliente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\": \"Producto Actualizado\",\r\n    \"marca\": \"Marca random\",\r\n    \"codigo\": \"PR001\",\r\n    \"stock\": \"100\",\r\n    \"precio\": 399.50,\r\n    \"imagen_url\": \"url\",\r\n    \"idCategoria\": \"1\",\r\n    \"idEstado\": \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-backend}}/api/customers/4",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"customers",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Cliente",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"razon_social\": \"Razon social editada\",\r\n    \"nombre_comercial\": \"Otra Comercial editada\",\r\n    \"direccion_entrega\": \"Direccion editada inventada\",\r\n    \"telefono\": \"123487498\",\r\n    \"correo_electronico\": \"cliente2@correo.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-backend}}/api/customers/2",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"customers",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonResponse = pm.response.json();\r",
+									"\r",
+									"pm.environment.set(\"jwt-token\", jsonResponse.data.token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"correo_electronico\": \"jpinedaespino@gmail.com\",\r\n    \"password\": \"test123adm\"\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-backend}}/api/auth/login",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							],
+							"query": [
+								{
+									"key": "password",
+									"value": "paloma",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categorias",
+			"item": [
+				{
+					"name": "Create Category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\": \"Categoria XY\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-backend}}/api/products-categories/",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"products-categories",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\": \"Tecnologia\",\r\n    \"idEstado\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-backend}}/api/products-categories/1",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"products-categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-backend}}/api/products-categories/",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"products-categories",
+								""
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create Category OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{api-backend}}/api/products-categories/",
+									"host": [
+										"{{api-backend}}"
+									],
+									"path": [
+										"api",
+										"products-categories",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1069"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"42d-Jv1j77c1o8lo+wcWXun0sqXr2pY\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 22 Dec 2024 22:42:24 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"nombre\": \"nombre\",\n            \"idEstado\": 1,\n            \"fecha_creacion\": \"2024-12-22T16:25:48.997Z\",\n            \"fecha_modificacion\": \"2024-12-22T16:25:48.997Z\",\n            \"usuario_creador\": \"Juan Pineda\"\n        },\n        {\n            \"id\": 3,\n            \"nombre\": \"Categoria B\",\n            \"idEstado\": 1,\n            \"fecha_creacion\": \"2024-12-22T16:27:11.897Z\",\n            \"fecha_modificacion\": \"2024-12-22T16:27:11.897Z\",\n            \"usuario_creador\": \"Juan Pineda\"\n        },\n        {\n            \"id\": 4,\n            \"nombre\": \"Categoria C\",\n            \"idEstado\": 1,\n            \"fecha_creacion\": \"2024-12-22T16:36:35.580Z\",\n            \"fecha_modificacion\": \"2024-12-22T16:36:35.580Z\",\n            \"usuario_creador\": \"Juan Pineda\"\n        },\n        {\n            \"id\": 5,\n            \"nombre\": \"Categoria E\",\n            \"idEstado\": 1,\n            \"fecha_creacion\": \"2024-12-22T16:37:01.310Z\",\n            \"fecha_modificacion\": \"2024-12-22T16:37:01.310Z\",\n            \"usuario_creador\": \"Juan Pineda\"\n        },\n        {\n            \"id\": 6,\n            \"nombre\": \"Categoria x\",\n            \"idEstado\": 1,\n            \"fecha_creacion\": \"2024-12-22T16:37:12.177Z\",\n            \"fecha_modificacion\": \"2024-12-22T16:37:12.177Z\",\n            \"usuario_creador\": \"Juan Pineda\"\n        },\n        {\n            \"id\": 7,\n            \"nombre\": \"Categoria XY\",\n            \"idEstado\": 1,\n            \"fecha_creacion\": \"2024-12-22T16:39:26.193Z\",\n            \"fecha_modificacion\": \"2024-12-22T16:39:26.193Z\",\n            \"usuario_creador\": \"Juan Pineda\"\n        }\n    ],\n    \"statusCode\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api-backend}}/api/products-categories/4",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"products-categories",
+								"4"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Delete OK",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{api-backend}}/api/products-categories/4",
+									"host": [
+										"{{api-backend}}"
+									],
+									"path": [
+										"api",
+										"products-categories",
+										"4"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "60"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"3c-ipnqctFtvqyB+6TvP+8YEQz67x8\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 22 Dec 2024 22:58:34 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"\",\n    \"data\": [],\n    \"statusCode\": 200\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Roles",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-backend}}/api/roles",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"roles"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Roles Get OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{api-backend}}/api/roles",
+									"host": [
+										"{{api-backend}}"
+									],
+									"path": [
+										"api",
+										"roles"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "282"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"11a-2Z8/NmAhOcxIS8I2z89rP2k7kuo\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 22 Dec 2024 23:11:12 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"nombre\": \"Administrador\",\n            \"fecha_creacion\": \"2024-12-22T15:55:27.640Z\"\n        },\n        {\n            \"id\": 2,\n            \"nombre\": \"Cliente\",\n            \"fecha_creacion\": \"2024-12-22T15:55:27.640Z\"\n        },\n        {\n            \"id\": 3,\n            \"nombre\": \"Operador\",\n            \"fecha_creacion\": \"2024-12-22T15:55:27.643Z\"\n        }\n    ],\n    \"statusCode\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\": \"Prueba Rol\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-backend}}/api/roles",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"roles"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Estados",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-backend}}/api/states",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"states"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Roles Get OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{api-backend}}/api/roles",
+									"host": [
+										"{{api-backend}}"
+									],
+									"path": [
+										"api",
+										"roles"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "282"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"11a-2Z8/NmAhOcxIS8I2z89rP2k7kuo\""
+								},
+								{
+									"key": "Date",
+									"value": "Sun, 22 Dec 2024 23:11:12 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status\": \"success\",\n    \"message\": \"\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"nombre\": \"Administrador\",\n            \"fecha_creacion\": \"2024-12-22T15:55:27.640Z\"\n        },\n        {\n            \"id\": 2,\n            \"nombre\": \"Cliente\",\n            \"fecha_creacion\": \"2024-12-22T15:55:27.640Z\"\n        },\n        {\n            \"id\": 3,\n            \"nombre\": \"Operador\",\n            \"fecha_creacion\": \"2024-12-22T15:55:27.643Z\"\n        }\n    ],\n    \"statusCode\": 200\n}"
+						}
+					]
+				},
+				{
+					"name": "Create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nombre\": \"Prueba Estado\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-backend}}/api/states",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"states"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Ordenes",
+			"item": [
+				{
+					"name": "Get all",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-backend}}/api/orders/list",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"orders",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-backend}}/api/orders/1",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"orders",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Order Detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-backend}}/api/orders/1/detail",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"orders",
+								"1",
+								"detail"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by User Id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-backend}}/api/orders/user/1",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"orders",
+								"user",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"usuario_idUsuario\": 1,\r\n    \"estado_idEstado\": 1,\r\n    \"nombre_completo\": \"Orden de pruebaxd\",\r\n    \"direccion\": \"Calle Falsa 123\",\r\n    \"telefono\": \"123456789\",\r\n    \"correo_electronico\": \"ordenprueba@email.com\",\r\n    \"total_orden\": 200.00,\r\n    \"detalles\": [\r\n        {\r\n            \"Producto_idProducto\": 1,\r\n            \"cantidad\": 2,\r\n            \"precio\": 50.00,\r\n            \"subtotal\": 100.00\r\n        },\r\n        {\r\n            \"Producto_idProducto\": 2,\r\n            \"cantidad\": 2,\r\n            \"precio\": 50.00,\r\n            \"subtotal\": 100.00\r\n        }\r\n    ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-backend}}/api/orders/",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"orders",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt-token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 2,\r\n    \"usuario_idUsuario\": 1,\r\n    \"estado_idEstado\": 1,\r\n    \"nombre_completo\": \"Orden de prueba actualizada\",\r\n    \"direccion\": \"Calle Falsa 123\",\r\n    \"telefono\": \"123456789\",\r\n    \"correo_electronico\": \"ordenprueba@email.com\",\r\n    \"fecha_entrega\": \"2024-12-31\",\r\n    \"total_orden\": 200.00,\r\n    \"detalles\": [\r\n        {\r\n            \"Producto_idProducto\": 1,\r\n            \"cantidad\": 2,\r\n            \"precio\": 50.00,\r\n            \"subtotal\": 100.00\r\n        },\r\n        {\r\n            \"Producto_idProducto\": 2,\r\n            \"cantidad\": 2,\r\n            \"precio\": 50.00,\r\n            \"subtotal\": 100.00\r\n        }\r\n    ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-backend}}/api/orders/",
+							"host": [
+								"{{api-backend}}"
+							],
+							"path": [
+								"api",
+								"orders",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
