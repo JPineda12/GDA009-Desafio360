@@ -82,6 +82,27 @@ const OrderService = {
     }
   },
 
+  async updateDeliveredOrder(idOrden) {
+    try {
+      const replacements = {
+        idOrden: idOrden,
+      };
+
+      const query = `
+      EXEC actualizar_orden_entregada
+          @idOrden=:idOrden`;
+
+      const result = await sequelize.query(query, {
+        replacements,
+        type: QueryTypes.UPDATE,
+      });
+
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   async getOrderDetail(idOrden) {
     try {
       const [result] = await sequelize.query('EXEC obtener_detalle_orden @idOrden = :id', {

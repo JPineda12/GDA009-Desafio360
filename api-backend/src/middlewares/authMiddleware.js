@@ -20,7 +20,7 @@ const authenticateJWT = (req, res, next) => {
   } catch (error) {
     return res.status(401).json({
       status: 'error',
-      message: 'Invalid or expired ',
+      message: 'Invalid or expired token ',
     });
   }
 };

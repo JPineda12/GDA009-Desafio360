@@ -1,0 +1,11 @@
+{
+  "name": "api-files",
+  "version": "1.0.0",
+  "description": "API Files to store images and other necessary files",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Juan Pineda",
+  "license": "MIT"
+}

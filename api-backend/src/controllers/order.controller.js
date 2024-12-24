@@ -61,7 +61,17 @@ const OrderController = {
     } catch (error) {
       next(error);
     }
-  }
+  },
+
+  async setDeliveredOrder(req, res, next) {
+    try {
+      const idOrden = req.params.idOrden;
+      const result = await OrderService.updateDeliveredOrder(idOrden);
+      responseUtils.successResponse(res, 'Order delivered date set successfully', result, HttpStatusCode.OK)
+    } catch (error) {
+      next(error)
+    }
+  },
 };
 
 export default OrderController;

@@ -4,9 +4,8 @@ dotenv.config();
 
 const jwtUtils = {
      generateToken(user) {
-        console.log("EXPIRE IN: ", process.env.JWT_EXPIRE_TIME)
         return jwt.sign(
-            { id: user.id, email: user.correo_electronico, nombre: user.nombre_completo },
+            { id: user.id, email: user.correo_electronico, nombre: user.nombre_completo, idRol: user.rol_idRol },
             process.env.JWT_SECRET_KEY,
             { expiresIn: process.env.JWT_EXPIRE_TIME }
         );

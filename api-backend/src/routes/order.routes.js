@@ -11,6 +11,7 @@ router.get('/user/:idUsuario', validate(OrderDto.orderByUserId), OrderController
 router.post('/', validate(OrderDto.orderCreateDto), OrderController.createOrder);
 router.put('/', validate(OrderDto.orderUpdateDto), OrderController.updateOrder);
 router.get('/:idOrden/detail', validate(OrderDto.orderById), OrderController.getOrderDetail);
+router.put('/deliver/:idOrden', validate(OrderDto.orderById), OrderController.setDeliveredOrder);
 
 
 const OrderRoutes = {

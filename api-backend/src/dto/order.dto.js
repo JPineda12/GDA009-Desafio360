@@ -40,7 +40,7 @@ const orderCreateDto = [
     .withMessage("El total de la orden no puede estar vacio")
     .isNumeric()
     .withMessage('El total de la orden debe ser numerico'),
-  body('detalles')
+  body('detalles_orden')
     .isArray()
     .withMessage('Detalles debe ser un arreglo')
     .custom((value) => {
@@ -115,7 +115,7 @@ const orderUpdateDto = [
     .withMessage("El total de la orden no puede estar vacio")
     .isNumeric()
     .withMessage('El total de la orden debe ser numerico'),
-  body('detalles')
+  body('detalles_orden')
     .isArray()
     .withMessage('Detalles debe ser un arreglo')
     .custom((value) => {
