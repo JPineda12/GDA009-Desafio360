@@ -2,6 +2,8 @@ import bcrypt from 'bcrypt';
 import jwtUtils from '../utils/jwtUtils.js';
 import { QueryTypes } from 'sequelize';
 import sequelize from '../config/database.js';
+import logger from '../utils/logger.js';
+
 const AuthService = {
     async login(data) {
         try {
@@ -24,7 +26,7 @@ const AuthService = {
                 throw new Error('User not found');
             }
         } catch (error) {
-            console.log('ERROR:', error);
+            logger.error('Login service error ', error)
             throw error;
         }
     },

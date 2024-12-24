@@ -1,6 +1,7 @@
 import { QueryTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 import EstadoEnum from '../utils/constants/EstadoEnum.js';
+import logger from '../utils/logger.js';
 
 const CustomerService = {
 
@@ -10,8 +11,10 @@ const CustomerService = {
         replacements: { id: idCliente },
         type: QueryTypes.SELECT,
       });
+      logger.debug('Get customer by id database result ', result)
       return result
     } catch (exception) {
+      logger.error('Get customer by id service error ', exception)
       throw exception
     }
   },
@@ -21,8 +24,10 @@ const CustomerService = {
       const result = await sequelize.query('EXEC obtener_clientes;', {
         type: QueryTypes.SELECT,
       });
+      logger.debug('Get customer list database result: ', result)
       return result
     } catch (exception) {
+      logger.error('Get customer list service error ', exception)
       throw exception
     }
   },
@@ -52,9 +57,10 @@ const CustomerService = {
         replacements,
         type: QueryTypes.INSERT,
       });
-
+      logger.debug('Create customer database result ', result)
       return result;
     } catch (error) {
+      logger.error('Create customer service error ', error)
       throw error;
     }
   },
@@ -85,9 +91,10 @@ const CustomerService = {
         replacements,
         type: QueryTypes.UPDATE,
       });
-
+      logger.debug('Update customer database result ', result)
       return result;
     } catch (error) {
+      logger.error('Update customer service error ', error)
       throw error;
     }
   },
@@ -98,8 +105,10 @@ const CustomerService = {
         replacements: { id: id },
         type: QueryTypes.DELETE,
       });
+      logger.debug('Delete customer database result ', result)
       return result
     } catch (exception) {
+      logger.error('Delete customer service error ', exception)
       throw exception
     }
   },

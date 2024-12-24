@@ -1,21 +1,24 @@
 import UserService from '../services/user.service.js';
 import responseUtils from '../utils/responseUtils.js';
 import HttpStatusCode from '../utils/constants/httpStatusCode.js';
-
+import logger from '../utils/logger.js';
 const UserController = {
 
   async getUserById(req, res, next) {
     try {
+      logger.info('Get user by id endpoint was hit with: ', req.params.idUsuario)
       const userId = req.params.idUsuario;
       const result = await UserService.getUserById(userId);
       responseUtils.successResponse(res, "", result, HttpStatusCode.OK);
     } catch (error) {
+      logger.error('Get user by id controller error: ', error)
       next(error);
     }
   },
 
   async getUsersList(_, res, next) {
     try {
+      logger.info('Get user list endpoint was hit')
       const result = await UserService.getUserList();
       responseUtils.successResponse(res, "", result, HttpStatusCode.OK);
     } catch (error) {

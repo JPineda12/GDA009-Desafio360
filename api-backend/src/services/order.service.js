@@ -1,6 +1,6 @@
 import { QueryTypes } from 'sequelize';
 import sequelize from '../config/database.js';
-import EstadoEnum from '../utils/constants/EstadoEnum.js';
+import logger from '../utils/logger.js';
 
 const OrderService = {
 
@@ -10,8 +10,10 @@ const OrderService = {
         replacements: { id: idOrden },
         type: QueryTypes.SELECT,
       });
+      logger.debug('Get order by orderId database result ', result)
       return result
     } catch (exception) {
+      logger.error('Get order by orderId service error ', exception)
       throw exception
     }
   },
@@ -22,8 +24,10 @@ const OrderService = {
         replacements: { id: idUsuario },
         type: QueryTypes.SELECT,
       });
+      logger.debug('Get orders by User Id database result ', result)
       return result
     } catch (exception) {
+      logger.error('Get order by User Id service error ', exception)
       throw exception
     }
   },
@@ -33,8 +37,10 @@ const OrderService = {
       const result = await sequelize.query('EXEC obtener_ordenes;', {
         type: QueryTypes.SELECT,
       });
+      logger.debug('Get Order list database result', result)
       return result
     } catch (exception) {
+      logger.erro('Get orders list service error ', exception)
       throw exception
     }
   },
@@ -54,9 +60,10 @@ const OrderService = {
         replacements,
         type: QueryTypes.INSERT,
       });
-
+      logger.debug('Create order database result ', result)
       return result;
     } catch (error) {
+      logger.error('Crate order service error ', error)
       throw error;
     }
   },
@@ -75,9 +82,10 @@ const OrderService = {
         replacements,
         type: QueryTypes.UPDATE,
       });
-
+      logger.debug('Update order database result ', result)
       return result;
     } catch (error) {
+      logger.error('Update order service error ', exception)
       throw error;
     }
   },
@@ -96,9 +104,10 @@ const OrderService = {
         replacements,
         type: QueryTypes.UPDATE,
       });
-
+      logger.debug('Update delivered order database result', result)
       return result;
     } catch (error) {
+      logger.error('Update delivered order service error ', error)
       throw error;
     }
   },
@@ -109,8 +118,10 @@ const OrderService = {
         replacements: { id: idOrden },
         type: QueryTypes.SELECT,
       });
+      logger.debug('Get order detail database result ', result)
       return result
     } catch (exception) {
+      logger.error('Get order detail service error ', exception)
       throw exception
     }
   }

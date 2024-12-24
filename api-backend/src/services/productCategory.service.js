@@ -1,6 +1,7 @@
 import EstadoEnum from "../utils/constants/EstadoEnum.js";
 import { QueryTypes } from 'sequelize';
 import sequelize from '../config/database.js';
+import logger from "../utils/logger.js";
 const ProductCategoryService = {
 
   async createProductCategory(body, userCreatorid) {
@@ -21,8 +22,10 @@ const ProductCategoryService = {
         replacements,
         type: QueryTypes.INSERT,
       });
+      logger.debug('Create product category database result ', result );
       return result;
     } catch (error) {
+      logger.error('Create category service error ', error)
       throw error;
     }
   },
@@ -32,8 +35,10 @@ const ProductCategoryService = {
       const result = await sequelize.query('EXEC obtener_categoria_producto;', {
         type: QueryTypes.SELECT,
       });
+      logger.debug('Get category list database result ', result)
       return result
     } catch (exception) {
+      logger.error('Get categories list service error ', exception)
       throw exception
     }
   },
@@ -58,8 +63,10 @@ const ProductCategoryService = {
         replacements,
         type: QueryTypes.UPDATE,
       });
+      logger.debug('Update product category database result ', result)
       return result;
     } catch (error) {
+      logger.error('Update product category service error ', error)
       throw error;
     }
   },
@@ -70,8 +77,10 @@ const ProductCategoryService = {
         replacements: { idCategoria: idCategoria},
         type: QueryTypes.DELETE,
       });
+      logger.debug('Delete category database result ', result);
       return result
     } catch (exception) {
+      logger.error('Delete category service error ', exception)
       throw exception
     }
   }

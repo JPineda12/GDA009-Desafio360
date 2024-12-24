@@ -1,4 +1,5 @@
 import axios from 'axios';
+import logger from '../utils/logger.js';
 
 const ImageService = {
     async callImageUploadBackend(base64Image) {
@@ -14,11 +15,10 @@ const ImageService = {
                     'Content-Type': 'application/json',
                 },
             });
-            console.log("RESPONSE: ", response)
+            logger.info('Call image upload backend result: ', response)
             return response.data.imageUrl;
-
         } catch (error) {
-            console.log("ERROR AQUI:", error)
+            logger.error('Call image upload backend error', error)
             throw error
         }
     }

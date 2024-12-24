@@ -1,6 +1,7 @@
 import { QueryTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 import ImageService from './image.service.js';
+import logger from '../utils/logger.js';
 const ProductService = {
 
   async getProductById(idProducto) {
@@ -9,8 +10,10 @@ const ProductService = {
         replacements: { id: idProducto },
         type: QueryTypes.SELECT,
       });
+      logger.debug('Get product by id database result ', result)
       return result
     } catch (exception) {
+      logger.error('Get product by id service error ', exception)
       throw exception
     }
   },
@@ -20,8 +23,10 @@ const ProductService = {
       const result = await sequelize.query('EXEC obtener_productos;', {
         type: QueryTypes.SELECT,
       });
+      logger.debug('Get product list database result ', result)
       return result
     } catch (exception) {
+      logger.error('Get products list service error ', exception)
       throw exception
     }
   },
@@ -65,9 +70,10 @@ const ProductService = {
         replacements,
         type: QueryTypes.INSERT,
       });
-
+      logger.debug('Create product database result ', result)
       return result;
     } catch (error) {
+      logger.error('Create product service error ', error)
       throw error;
     }
   },
@@ -104,9 +110,10 @@ const ProductService = {
         replacements,
         type: QueryTypes.UPDATE,
       });
-
+      logger.debug('Update product database result ', result);
       return result;
     } catch (error) {
+      logger.error('Update product service error ', error)
       throw error;
     }
   },
@@ -118,8 +125,10 @@ const ProductService = {
         replacements: { id: id },
         type: QueryTypes.DELETE,
       });
+      logger.debug('Delete product database result ', result);
       return result
     } catch (exception) {
+      logger.error('Delete product service error ', exception)
       throw exception
     }
   },
