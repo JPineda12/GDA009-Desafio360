@@ -1,7 +1,7 @@
 import app from './app.js'; // Import app default export
 import sequelize from './config/database.js';
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.API_PORT || 3000;
 
 sequelize.sync({ force: false }).then(() => {
   console.log('Database connected');

@@ -11,11 +11,15 @@ import StateRoutes from './routes/state.routes.js';
 import ProductRoutes from './routes/product.routes.js';
 import CustomerRoutes from './routes/customer.routes.js';
 import OrderRoutes from './routes/order.routes.js';
+import LogMiddleware from './middlewares/log.middleware.js';
 dotenv.config();
 
 const app = express();
+app.use(LogMiddleware);
 
-app.use(express.json());
+app.use(express.json({ limit: `${process.env.FILE_MAX_SIZE || '10mb'}` }));
+app.use(express.urlencoded({ extended: true }));
+
 app.use('/', IndexRoutes.router)
 app.use('/api/auth/', AuthRoutes.router);
 app.use('/api/users/', authenticateJWT, UserRoutes.router);

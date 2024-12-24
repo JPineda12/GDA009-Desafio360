@@ -1,20 +1,20 @@
 import { QueryTypes } from 'sequelize';
 import sequelize from '../config/database.js';
-
+import ImageService from './image.service.js';
 const ProductService = {
 
-    async getProductById(idProducto) {
-      try {
-        const [result] = await sequelize.query('EXEC obtener_producto_por_id @idProducto = :id', {
-          replacements: { id: idProducto },
-          type: QueryTypes.SELECT,
-        });
-        return result
-      } catch (exception) {
-        throw exception
-      }
-    },
-    
+  async getProductById(idProducto) {
+    try {
+      const [result] = await sequelize.query('EXEC obtener_producto_por_id @idProducto = :id', {
+        replacements: { id: idProducto },
+        type: QueryTypes.SELECT,
+      });
+      return result
+    } catch (exception) {
+      throw exception
+    }
+  },
+
   async getProductsList() {
     try {
       const result = await sequelize.query('EXEC obtener_productos;', {
@@ -26,16 +26,23 @@ const ProductService = {
     }
   },
 
-  
+
   async createProduct(body, userCreatorid) {
     try {
+
+      //Try to upload the image
+      let imageUrl = await ImageService.callImageUploadBackend(body.imagen_base64)
+      if (!imageUrl) {
+        imageUrl = ''
+      }
+
       const replacements = {
         nombre: body.nombre,
         marca: body.marca,
         codigo: body.codigo,
         stock: body.stock,
         precio: body.precio,
-        imagen_url: body.imagen_url,
+        imagen_url: imageUrl,
         idCategoria: body.idCategoria,
         idUsuario: userCreatorid,
         idEstado: body.idEstado
@@ -65,7 +72,7 @@ const ProductService = {
     }
   },
 
-  async updateProduct(idProduct,body, userCreatorid) {
+  async updateProduct(idProduct, body, userCreatorid) {
     try {
       const replacements = {
         idProducto: idProduct,
@@ -104,7 +111,7 @@ const ProductService = {
     }
   },
 
-  
+
   async deleteProduct(id) {
     try {
       const [result] = await sequelize.query('EXEC eliminar_producto @idProducto = :id', {

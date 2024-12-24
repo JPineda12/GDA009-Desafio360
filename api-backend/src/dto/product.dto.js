@@ -27,13 +27,13 @@ const productCreateDto = [
         .withMessage('El precio no puede ser vacio')
         .isNumeric()
         .withMessage('El precio tiene que ser numerico'),
-    body('imagen_url')
+    body('imagen_base64')
         .notEmpty()
         .withMessage('La imagen no puede ser vacia')
         .isString()
         .withMessage('La imagen tiene que ser un string')
-        .isLength({ max: 500 })
-        .withMessage("La url de la imagen debe ser menor a 500 caracteres"),
+        .isBase64()
+        .withMessage('La imagen debe estar en formato base64'),
     body('idCategoria')
         .optional()
         .isInt()
