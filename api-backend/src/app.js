@@ -12,9 +12,16 @@ import ProductRoutes from './routes/product.routes.js';
 import CustomerRoutes from './routes/customer.routes.js';
 import OrderRoutes from './routes/order.routes.js';
 import LogMiddleware from './middlewares/log.middleware.js';
+import cors from 'cors';
+
 dotenv.config();
 
 const app = express();
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  }));
+
 app.use(LogMiddleware);
 
 app.use(express.json({ limit: `${process.env.FILE_MAX_SIZE || '10mb'}` }));

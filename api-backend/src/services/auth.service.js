@@ -3,6 +3,8 @@ import jwtUtils from '../utils/jwtUtils.js';
 import { QueryTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 import logger from '../utils/logger.js';
+import HttpStatusCode from '../utils/constants/httpStatusCode.js';
+import AppError from '../utils/AppError.js';
 
 const AuthService = {
     async login(data) {
@@ -20,10 +22,10 @@ const AuthService = {
 
                     return { message: 'Login successful', token: token };
                 } else {
-                    throw new Error('Invalid credentials');
+                    throw new AppError('Credenciales invalidas', HttpStatusCode.UNAUTHORIZED)
                 }
             } else {
-                throw new Error('User not found');
+                throw new AppError('Credenciales invalidas', HttpStatusCode.UNAUTHORIZED)
             }
         } catch (error) {
             logger.error('Login service error ', error)
