@@ -1,0 +1,26 @@
+{
+  "name": "api-files",
+  "version": "1.0.0",
+  "description": "API Files to store images and other necessary files",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Juan Pineda",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "image-type": "^5.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "path": "^0.12.7",
+    "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
