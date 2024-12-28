@@ -2,11 +2,10 @@ import AppError from "../utils/AppError.js";
 import HttpStatusCode from "../utils/constants/httpStatusCode.js";
 
 function RoleAuthorization(...allowedRoles) {
-    return (req, res, next) => {
+    return (req, _, next) => {
       const userRole = req.user?.idRol;
-      console.log("USERROLE: ", userRole)
-      console.log("ALLOWED: ", allowedRoles)
       if (!allowedRoles.includes(userRole)) {
+        logger.error('Unauthorized role to this route ', exception)
         throw new AppError('Rol no autorizado', HttpStatusCode.FORBIDDEN)
       }
       next();
