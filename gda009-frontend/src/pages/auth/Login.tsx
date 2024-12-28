@@ -1,12 +1,14 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { TextField, Button, Box, Typography, Alert, Card, CardContent } from '@mui/material';
+import { TextField, Button, Box, Typography, Card, CardContent } from '@mui/material';
 import React from 'react';
 import authService from '../../services/auth-service';
 import { useNotification } from '../../context/NotificationProvider';
-import decodeToken from '../../utils/JwtDecode';
 import { jwtDecode } from 'jwt-decode';
+import RolEnum from '../../utils/RolEnum';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 interface LoginFormValues {
   correo_electronico: string;
@@ -19,32 +21,17 @@ const schema = yup.object().shape({
 });
 
 const Login: React.FC = () => {
+  const { notify } = useNotification();
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormValues>({
     resolver: yupResolver(schema),
   });
-
-  const { notify } = useNotification();
-
+  const { login } = useAuth();
   const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
     try {
       const response = await authService.login(data.correo_electronico, data.password);
       console.log('Login successful:', response);
 
-      // Save the token in localStorage
-      localStorage.setItem('token', response.token);
-      const userData = decodeToken(response.token);
-      localStorage.setItem('user', JSON.stringify(userData));
-      console.log('User Info from Token:', userData);
-
-      notify('Login successful!', 'success');
-
-      const role = jwtDecode<{ role: string }>(response.token);
-      console.log("ROLE: ", role)
-      /*
-      if (role === 'client') navigate('/');
-      else if (role === 'operator') navigate('/operator/products');
-      else setError('Rol desconocido, por favor contacta al administrador.');
-       */
+      login(response.token)
     } catch (error: any) {
       if (error.statusCode === 401) {
         notify(error.message || 'Unauthorized', 'error');

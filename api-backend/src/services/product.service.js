@@ -34,8 +34,6 @@ const ProductService = {
 
   async createProduct(body, userCreatorid) {
     try {
-
-      //Try to upload the image
       let imageUrl = await ImageService.callImageUploadBackend(body.imagen_base64)
       if (!imageUrl) {
         imageUrl = ''
