@@ -63,6 +63,7 @@ const OrderService = {
       logger.debug('Create order database result ', result)
       return result;
     } catch (error) {
+      console.log("ERROR: test", error.stack)
       logger.error('Crate order service error ', error)
       throw error;
     }

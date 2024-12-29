@@ -13,7 +13,9 @@ router.post('/',
     ProductCategoryController.create
 );
 
-router.get('/', ProductCategoryController.getCategoriasList);
+router.get('/',
+    RoleAuthorization(RolEnum.ADMIN, RolEnum.OPERADOR, RolEnum.CLIENTE),
+    ProductCategoryController.getCategoriasList);
 router.put('/:idCategoria', validate(ProductCategoryDto.productCategoryUpdateDto),
     RoleAuthorization(RolEnum.ADMIN, RolEnum.OPERADOR),
     ProductCategoryController.updateCategoria);
