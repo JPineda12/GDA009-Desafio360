@@ -2,6 +2,7 @@ import EstadoEnum from "../utils/constants/EstadoEnum.js";
 import { QueryTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 import logger from "../utils/logger.js";
+
 const ProductCategoryService = {
 
   async createProductCategory(body, userCreatorid) {

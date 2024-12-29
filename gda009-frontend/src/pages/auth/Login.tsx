@@ -5,9 +5,6 @@ import { TextField, Button, Box, Typography, Card, CardContent } from '@mui/mate
 import React from 'react';
 import authService from '../../services/auth-service';
 import { useNotification } from '../../context/NotificationProvider';
-import { jwtDecode } from 'jwt-decode';
-import RolEnum from '../../utils/RolEnum';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 interface LoginFormValues {
@@ -29,8 +26,6 @@ const Login: React.FC = () => {
   const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
     try {
       const response = await authService.login(data.correo_electronico, data.password);
-      console.log('Login successful:', response);
-
       login(response.token)
     } catch (error: any) {
       if (error.statusCode === 401) {

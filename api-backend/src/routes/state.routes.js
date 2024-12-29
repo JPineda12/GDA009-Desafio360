@@ -5,8 +5,12 @@ import StateController from '../controllers/state.controller.js'
 
 const router = Router();
 
-router.post('/', validate(StateDto.stateCreateDto), StateController.create);
-router.get('/', StateController.getStatesList);
+router.post('/', validate(StateDto.stateCreateDto),
+    RoleAuthorization(RolEnum.ADMIN),
+    StateController.create);
+router.get('/',
+    RoleAuthorization(RolEnum.ADMIN, RolEnum.OPERADOR),
+    StateController.getStatesList);
 
 const StateRoutes = {
     router

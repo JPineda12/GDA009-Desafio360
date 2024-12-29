@@ -1,5 +1,4 @@
 -- DROP DATABASE GDA009_OT_Juan_Pineda; use xd;
-
 -- CREATE DATABASE GDA009_OT_Juan_Pineda;
 
 USE GDA009_OT_Juan_Pineda;
@@ -931,102 +930,167 @@ CREATE PROCEDURE crear_orden_con_detalle
     @OrdenJson NVARCHAR(MAX)
 AS
 BEGIN
-	BEGIN TRY;
-    DECLARE @OrdenId INT;
+    BEGIN TRY
+		
+		-- Validaciones Base.. 
+		-- Ver si Usuario existe
+		IF NOT EXISTS (SELECT 1 FROM Usuario WHERE id = JSON_VALUE(@OrdenJson,'$.usuario_idUsuario'))
+		BEGIN
+			RAISERROR('El usuario con el id especificado no existe.', 16, 1);
+			RETURN;
+		END
+        DECLARE @OrdenId INT;
+        DECLARE @ErrorProductos NVARCHAR(MAX);
+        
+        BEGIN TRANSACTION;
 
-	BEGIN TRANSACTION;
-    INSERT INTO Orden (
-        usuario_idUsuario,
-        estado_idEstado,
-        nombre_completo,
-        direccion,
-        telefono,
-        correo_electronico,
-        total_orden,
-        fecha_creacion,
-        fecha_modificacion
-    )
-    SELECT
-        usuario_idUsuario,
-        estado_idEstado,
-        nombre_completo,
-        direccion,
-        telefono,
-        correo_electronico,
-        total_orden,
-        GETDATE(),
-        GETDATE() 
-    FROM OPENJSON(@OrdenJson)
-    WITH (
-        usuario_idUsuario INT,
-        estado_idEstado INT,
-        nombre_completo NVARCHAR(90),
-        direccion NVARCHAR(200),
-        telefono VARCHAR(20),
-        correo_electronico VARCHAR(50),
-        fecha_entrega DATE,
-        total_orden FLOAT
-    );
+        CREATE TABLE #Temp_Producto_no_stock ( -- Tabla temporal para el listado de productos sin stock suficiente
+            Producto_idProducto INT,
+            cantidad_requerida INT,
+            cantidad_disponible INT
+        );
 
-    SET @OrdenId = SCOPE_IDENTITY();
+		-- Insertar los productos que no cuentan con stock suficiente
+        INSERT INTO #Temp_Producto_no_stock(Producto_idProducto, cantidad_requerida, cantidad_disponible)
+        SELECT
+            det.Producto_idProducto,
+            det.cantidad,
+            pr.stock
+        FROM OPENJSON(@OrdenJson, '$.detalles_orden')
+        WITH (
+            Producto_idProducto INT,
+            cantidad INT
+        ) AS det, Producto pr
+        WHERE det.Producto_idProducto = pr.id
+        AND det.cantidad > pr.stock; -- Insertar solo si la cantidad que viene en el detalle de la orden es insuficiente
 
-    INSERT INTO Orden_Detalle (
-        Orden_idOrden,
-        Producto_idProducto,
-        cantidad,
-        precio,
-        subtotal,
-        fecha_creacion,
-        fecha_modificacion
-    )
-    SELECT
-        @OrdenId,
-        Producto_idProducto,
-        cantidad,
-        precio,
-        subtotal,
-        GETDATE(),
-        GETDATE() 
-    FROM OPENJSON(@OrdenJson, '$.detalles_orden')
-    WITH (
-        Producto_idProducto INT,
-        cantidad INT,
-        precio FLOAT,
-        subtotal FLOAT
-    );
-	COMMIT TRANSACTION;
-		-- Return la informacion de la orden recien insertada
-		SELECT 
-			 id,
-			usuario_idUsuario as idUsuario,
-			estado_idEstado as idEstado,
-			nombre_completo,
-			direccion,
-			telefono,
-			correo_electronico,
-			fecha_entrega,
-			total_orden,
-			fecha_creacion
-		FROM Orden
-		WHERE id =  @OrdenId;
-	END TRY
+        -- Comprobar si hay productos con stock insuficiente
+        IF EXISTS (SELECT 1 FROM #Temp_Producto_no_stock) -- Ver si existe algun producto sin stock en mi tabla temporal
+        BEGIN
+            SELECT @ErrorProductos = STRING_AGG(
+                CONCAT('Producto ID: ', Producto_idProducto, ', Cantidad solicitada: ', cantidad_requerida, ', Cantidad disponible: ', cantidad_disponible),
+                '; '
+            )
+            FROM #Temp_Producto_no_stock;
+
+            RAISERROR (
+                'Stock insuficiente para los siguientes productos: %s', 
+                16, 1, @ErrorProductos
+            );
+            RETURN;
+        END;
+
+        -- Insertar en la tabla Orden
+        INSERT INTO Orden (
+            usuario_idUsuario,
+            estado_idEstado,
+            nombre_completo,
+            direccion,
+            telefono,
+            correo_electronico,
+            total_orden,
+            fecha_creacion,
+            fecha_modificacion
+        )
+        SELECT
+            usuario_idUsuario,
+            estado_idEstado,
+            nombre_completo,
+            direccion,
+            telefono,
+            correo_electronico,
+            total_orden,
+            GETDATE(),
+            GETDATE()
+        FROM OPENJSON(@OrdenJson)
+        WITH (
+            usuario_idUsuario INT,
+            estado_idEstado INT,
+            nombre_completo NVARCHAR(90),
+            direccion NVARCHAR(200),
+            telefono VARCHAR(20),
+            correo_electronico VARCHAR(50),
+            fecha_entrega DATE,
+            total_orden FLOAT
+        );
+
+        SET @OrdenId = SCOPE_IDENTITY();
+
+		DECLARE @ProductosVendidos TABLE(Producto_idProducto INT, cantidad_vendida INT) -- Variable temporal para obtener los productos vendidos
+        -- Insertar en la tabla Orden_Detalle
+        INSERT INTO Orden_Detalle (
+            Orden_idOrden,
+            Producto_idProducto,
+            cantidad,
+            precio,
+            subtotal,
+            fecha_creacion,
+            fecha_modificacion
+        )
+        OUTPUT inserted.Producto_idProducto, inserted.cantidad 	-- Obtener el producto y cantidad insertada para actualizar e insertarlo en mi variable temporal
+        INTO @ProductosVendidos(Producto_idProducto, cantidad_vendida)
+        SELECT
+            @OrdenId,
+            Producto_idProducto,
+            cantidad,
+            precio,
+            subtotal,
+            GETDATE(),
+            GETDATE()
+        FROM OPENJSON(@OrdenJson, '$.detalles_orden')
+        WITH (
+            Producto_idProducto INT,
+            cantidad INT,
+            precio FLOAT,
+            subtotal FLOAT
+        );
+
+        -- Actualizar stock en la tabla Producto
+		UPDATE p
+		SET p.stock = p.stock - v.cantidad_vendida
+		FROM Producto p
+		JOIN @ProductosVendidos v ON p.id = v.Producto_idProducto;
+
+
+        -- Limpiar tabla temporal
+        DROP TABLE #Temp_Producto_no_stock;
+
+        -- Confirmar transacción
+        COMMIT TRANSACTION;
+
+        -- Retornar detalles de la orden creada
+        SELECT 
+            id,
+            usuario_idUsuario AS idUsuario,
+            estado_idEstado AS idEstado,
+            nombre_completo,
+            direccion,
+            telefono,
+            correo_electronico,
+            fecha_entrega,
+            total_orden,
+            fecha_creacion
+        FROM Orden
+        WHERE id = @OrdenId;
+
+    END TRY
     BEGIN CATCH
-        -- Rollback in case of error
+        -- Manejar errores
         IF @@TRANCOUNT > 0
             ROLLBACK TRANSACTION;
 
-        -- Return error details
         DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
         DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
         DECLARE @ErrorState INT = ERROR_STATE();
 
         RAISERROR (
-            'Ocurrio un error creando la orden en la base de datos: %s', 
+            'Ocurrió un error creando la orden en la base de datos: %s', 
             @ErrorSeverity, @ErrorState, @ErrorMessage
         );
-    END CATCH
+    END CATCH;
 END
 GO
+
 
 CREATE PROCEDURE editar_orden_con_detalle
     @OrdenJson NVARCHAR(MAX)
@@ -1203,7 +1267,7 @@ CREATE PROCEDURE obtener_usuario_por_id(
 )
 AS
 BEGIN
-	SELECT correo_electronico, nombre_completo, telefono, fecha_nacimiento 
+	SELECT correo_electronico, nombre_completo, telefono, fecha_nacimiento, rol_idRol as idRol
 	FROM Usuario
 	WHERE id = @idUsuario
 	AND estado_idEstado <> 3; -- Todos menos estado eliminado
@@ -1216,7 +1280,7 @@ CREATE PROCEDURE obtener_usuario_por_correo(
 )
 AS
 BEGIN
-	SELECT id, correo_electronico, nombre_completo, password
+	SELECT id, correo_electronico, nombre_completo, password, rol_idRol as idRol
 	FROM Usuario
 	WHERE correo_electronico = @correo_electronico
 	AND estado_idEstado <> 3; -- no estado eliminado

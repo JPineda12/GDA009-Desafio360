@@ -5,8 +5,12 @@ import RoleController from '../controllers/role.controller.js'
 
 const router = Router();
 
-router.post('/', validate(RoleDto.roleCreateDto), RoleController.create);
-router.get('/', RoleController.getRolesList);
+router.post('/', validate(RoleDto.roleCreateDto),
+    RoleAuthorization(RolEnum.ADMIN),
+    RoleController.create);
+router.get('/', 
+    RoleAuthorization(RolEnum.ADMIN, RolEnum.OPERADOR),
+    RoleController.getRolesList);
 
 const RoleRoutes = {
     router
