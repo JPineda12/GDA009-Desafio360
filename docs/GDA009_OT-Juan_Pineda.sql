@@ -1,5 +1,5 @@
--- DROP DATABASE GDA009_OT_Juan_Pineda; use xd;
--- CREATE DATABASE GDA009_OT_Juan_Pineda;
+-- use xd;
+--  DROP DATABASE GDA009_OT_Juan_Pineda; CREATE DATABASE GDA009_OT_Juan_Pineda;
 
 USE GDA009_OT_Juan_Pineda;
 /********************************************************************************
@@ -24,20 +24,6 @@ fecha_creacion datetime not null,
 constraint PK_Estado primary key (id)
 );
 
-create table Cliente(
-id int identity(1,1) not null,
-razon_social varchar(245) not null,
-nombre_comercial nvarchar(100) not null,
-direccion_entrega nvarchar(200) not null,
-telefono varchar(20),
-correo_electronico varchar(50) not null UNIQUE,
-fecha_creacion datetime not null,
-fecha_modificacion datetime not null,
-fecha_eliminacion datetime,
-estado_idEstado INT not null
-constraint PK_Cliente primary key (id)
-constraint FK_Estado_idEstado foreign key (estado_idEstado) references Estado(id),
-);
 
 create table Usuario(
 id int identity(1,1) not null,
@@ -47,16 +33,16 @@ correo_electronico varchar(50) not null UNIQUE,
 nombre_completo nvarchar(90) not null,
 password varchar(512) not null,
 telefono varchar(20),
+razon_social varchar(245),
+nombre_comercial nvarchar(100),
+direccion_entrega nvarchar(200),
 fecha_nacimiento date not null,
 fecha_creacion datetime not null,
 fecha_modificacion datetime not null,
 fecha_eliminacion datetime,
-Cliente_idCliente int
-
 constraint PK_Usuario primary key (id),
 constraint FK_Usuario_Rol foreign key (rol_idRol) references Rol(id),
 constraint FK_Usuario_Estado foreign key (estado_idEstado) references Estado(id),
-constraint FK_Usuario_Cliente foreign key (Cliente_idCliente) references Cliente(id)
 );
 
 create table Categoria_Producto(
@@ -170,8 +156,10 @@ CREATE PROCEDURE crear_usuario
 	@fecha_nacimiento date,
 	@idRol int,
 	@idEstado int,
-	@idCliente int = null,
-	@telefono varchar(20) = null
+	@telefono varchar(20) = null,
+	@razon_social varchar(245) = null,
+	@nombre_comercial nvarchar(100) = null,
+	@direccion_entrega nvarchar(200) = null
 )
 AS
 BEGIN
@@ -195,14 +183,10 @@ BEGIN
 			RETURN;
 		END
 
-		IF @idCliente IS NOT NULL AND NOT EXISTS (SELECT 1 FROM Cliente WHERE id = @idCliente)
-		BEGIN
-			RAISERROR('El Cliente especificado no existe.', 16, 1);
-			RETURN;
-		END
-
-		INSERT INTO Usuario(correo_electronico, nombre_completo,  password, fecha_nacimiento, rol_idRol, estado_idEstado, Cliente_idCliente, telefono, fecha_creacion, fecha_modificacion)
-		VALUES (@correo_electronico,  @nombre_completo, @password, @fecha_nacimiento, @idRol, @idEstado, @idCliente, @telefono, GETDATE(), GETDATE())
+		INSERT INTO Usuario(correo_electronico, nombre_completo,  password, fecha_nacimiento, rol_idRol, estado_idEstado, telefono, 
+		razon_social, nombre_comercial, direccion_entrega, fecha_creacion, fecha_modificacion)
+		VALUES (@correo_electronico,  @nombre_completo, @password, @fecha_nacimiento, @idRol, @idEstado, @telefono, 
+		@razon_social, @nombre_comercial, @direccion_entrega, GETDATE(), GETDATE())
 
 		-- RETORNAR INFORMACION DEL REGISTRO RECIEN INSERTADO
 		DECLARE @newIdUsuario INT = SCOPE_IDENTITY();
@@ -212,17 +196,24 @@ BEGIN
 
 		-- Return la informacion del usuario recien insertado
 		SELECT 
-			 id,
-			correo_electronico,
-			nombre_completo,
-			fecha_nacimiento,
-			rol_idRol as idRol,
-			estado_idEstado as idEstado,
-			Cliente_idCliente as idCliente,
-			telefono,
-			fecha_creacion
-		FROM Usuario
-		WHERE id =  @newIdUsuario;
+			A.id,
+			A.correo_electronico,
+			A.nombre_completo,
+			A.fecha_nacimiento,
+			A.rol_idRol as idRol,
+			C.nombre as rol,
+			A.estado_idEstado as idEstado,
+			B.nombre as estado,
+			A.telefono,
+			A.razon_social,
+			A.nombre_comercial,
+			A.direccion_entrega,
+			A.fecha_creacion,
+			A.fecha_modificacion
+		FROM Usuario A, Estado B, Rol C
+		WHERE A.id =  @newIdUsuario
+		AND A.estado_idEstado = B.id
+		AND A.rol_idRol = C.id
 	END TRY
     BEGIN CATCH
         -- Rollback in case of error
@@ -251,8 +242,10 @@ CREATE PROCEDURE editar_usuario
 	@fecha_nacimiento date,
 	@idRol int,
 	@idEstado int,
-	@idCliente int = null,
-	@telefono varchar(20) = null
+	@telefono varchar(20) = null,
+	@razon_social varchar(245) = null,
+	@nombre_comercial nvarchar(100) = null,
+	@direccion_entrega nvarchar(200) = null
 )
 AS
 BEGIN
@@ -282,11 +275,6 @@ BEGIN
         RETURN;
     END
 
-    IF @idCliente IS NOT NULL AND NOT EXISTS (SELECT 1 FROM Cliente WHERE id = @idCliente)
-    BEGIN
-        RAISERROR('El Cliente especificado no existe.', 16, 1);
-        RETURN;
-    END
 
 	UPDATE USUARIO
 	SET correo_electronico = @correo_electronico, 
@@ -294,27 +282,37 @@ BEGIN
 		password = @password, 
 		fecha_nacimiento = @fecha_nacimiento, 
 		Rol_idRol = @idRol, 
-		Estado_idEstado = @idEstado, 
-		Cliente_idCliente = @idCliente, 
-		telefono = @telefono, 
+		Estado_idEstado = @idEstado,
+		telefono = @telefono,
+		razon_social = @razon_social,
+		nombre_comercial = @nombre_comercial,
+		direccion_entrega = @direccion_entrega,
 		fecha_modificacion = GETDATE()
 	WHERE id = @idUsuario;
 
 
 		 COMMIT TRANSACTION;
 		-- Return la informacion del usuario recien actualizado
+		-- Return la informacion del usuario recien insertado
 		SELECT 
-			 id,
-			correo_electronico,
-			nombre_completo,
-			fecha_nacimiento,
-			rol_idRol as idRol,
-			estado_idEstado as idEstado,
-			Cliente_idCliente as idCliente,
-			telefono,
-			fecha_modificacion
-		FROM Usuario
-		WHERE id =   @idUsuario;
+			A.id,
+			A.correo_electronico,
+			A.nombre_completo,
+			A.fecha_nacimiento,
+			A.rol_idRol as idRol,
+			C.nombre as rol,
+			A.estado_idEstado as idEstado,
+			B.nombre as estado,
+			A.telefono,
+			A.razon_social,
+			A.nombre_comercial,
+			A.direccion_entrega,
+			A.fecha_creacion,
+			A.fecha_modificacion
+		FROM Usuario A, Estado B, Rol C
+		WHERE A.id =  @idUsuario
+		AND A.estado_idEstado = B.id
+		AND A.rol_idRol = C.id
 	END TRY
     BEGIN CATCH
         -- Rollback in case of error
@@ -501,8 +499,6 @@ BEGIN
 END
 GO
 
-select * from Categoria_Producto;
-
 CREATE PROCEDURE eliminar_categoria_producto
 (
 	@idCategoria int
@@ -545,170 +541,6 @@ BEGIN
 
         RAISERROR (
             'Ocurrio un error eliminando la categoria en la base de datos: %s', 
-            @ErrorSeverity, @ErrorState, @ErrorMessage
-        );
-    END CATCH
-END
-GO
-
--- PROCEDIMIENTOS DE CLIENTE
-GO
-
-CREATE PROCEDURE crear_cliente
-(
-    @razon_social VARCHAR(245),
-    @nombre_comercial NVARCHAR(100),
-	@direccion_entrega NVARCHAR(200),
-	@telefono VARCHAR(20),
-	@correo_electronico VARCHAR(50),
-	@idEstado INT
-)
-AS
-BEGIN
-	BEGIN TRY
-    IF NOT EXISTS (SELECT 1 FROM Estado WHERE id = @idEstado)
-    BEGIN
-        RAISERROR('El Estado especificado no existe.', 16, 1);
-        RETURN;
-    END
-
-	BEGIN TRANSACTION;
-	INSERT INTO Cliente(razon_social, nombre_comercial, direccion_entrega, correo_electronico, telefono, estado_idEstado,fecha_creacion, fecha_modificacion)
-	VALUES(@razon_social, @nombre_comercial, @direccion_entrega, @correo_electronico, @telefono, @idEstado, GETDATE(), GETDATE());
-		
-	DECLARE @newId INT = SCOPE_IDENTITY();
-	COMMIT TRANSACTION;
-		-- Return la informacion del cliente recien insertado
-		SELECT 
-			 id,
-			razon_social,
-			nombre_comercial,
-			direccion_entrega,
-			telefono,
-			estado_idEstado as idEstado,
-			fecha_creacion
-		FROM Cliente
-		WHERE id =  @newId;
-	END TRY
-    BEGIN CATCH
-        -- Rollback in case of error
-        IF @@TRANCOUNT > 0
-            ROLLBACK TRANSACTION;
-
-        -- Return error details
-        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
-        DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
-        DECLARE @ErrorState INT = ERROR_STATE();
-
-        RAISERROR (
-            'Ocurrio un error creando el cliente en la base de datos: %s', 
-            @ErrorSeverity, @ErrorState, @ErrorMessage
-        );
-    END CATCH
-END
-GO
-
-CREATE PROCEDURE editar_cliente
-(
-	@idCliente INT,
-    @razon_social VARCHAR(245),
-    @nombre_comercial NVARCHAR(100),
-	@direccion_entrega NVARCHAR(200),
-	@telefono VARCHAR(20),
-	@correo_electronico VARCHAR(50),
-	@idEstado INT
-)
-AS
-BEGIN
-	BEGIN TRY
-    IF NOT EXISTS (SELECT 1 FROM Estado WHERE id = @idEstado)
-    BEGIN
-        RAISERROR('El Estado especificado no existe.', 16, 1);
-        RETURN;
-    END
-	
-	BEGIN TRANSACTION;
-	UPDATE Cliente
-	SET razon_social = @razon_social, nombre_comercial = @nombre_comercial, direccion_entrega = @direccion_entrega, 
-		telefono = @telefono, correo_electronico = @correo_electronico, estado_idEstado = @idEstado
-	WHERE id = @idCliente;
-
-	COMMIT TRANSACTION;
-		-- Return la informacion del cliente recien actualizado
-		SELECT 
-			 id,
-			razon_social,
-			nombre_comercial,
-			direccion_entrega,
-			telefono,
-			correo_electronico,
-			estado_idEstado as idEstado,
-			fecha_modificacion
-		FROM Cliente
-		WHERE id =  @idCliente;
-	END TRY
-    BEGIN CATCH
-        -- Rollback in case of error
-        IF @@TRANCOUNT > 0
-            ROLLBACK TRANSACTION;
-
-        -- Return error details
-        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
-        DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
-        DECLARE @ErrorState INT = ERROR_STATE();
-
-        RAISERROR (
-            'Ocurrio un error actualizando en la base de datos: %s', 
-            @ErrorSeverity, @ErrorState, @ErrorMessage
-        );
-    END CATCH
-
-END
-
-GO
-
-CREATE PROCEDURE eliminar_cliente
-(
-	@idCliente int
-)
-AS
-BEGIN
-	BEGIN TRY
-    IF NOT EXISTS (SELECT 1 FROM Cliente WHERE id = @idCliente)
-    BEGIN
-        RAISERROR('El cliente con el id especificado no existe.', 16, 1);
-        RETURN;
-    END
-
-		DECLARE @idEstadoEliminado INT;
-
-			SELECT @idEstadoEliminado = id
-			FROM Estado
-			WHERE LOWER(nombre) = 'eliminado';
-
-			IF @idEstadoEliminado IS NULL
-			BEGIN
-				RAISERROR('No existe el estado "eliminado" en la tabla Estado.', 16, 1);
-				RETURN;
-			END
-	BEGIN TRANSACTION;
-	UPDATE CLIENTE SET estado_idEstado = @idEstadoEliminado, fecha_eliminacion = GETDATE()
-	WHERE id = @idCliente
-
-	COMMIT TRANSACTION;
-	END TRY
-    BEGIN CATCH
-        -- Rollback in case of error
-        IF @@TRANCOUNT > 0
-            ROLLBACK TRANSACTION;
-
-        -- Return error details
-        DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
-        DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
-        DECLARE @ErrorState INT = ERROR_STATE();
-
-        RAISERROR (
-            'Ocurrio un error eliminando el cliente en la base de datos: %s', 
             @ErrorSeverity, @ErrorState, @ErrorMessage
         );
     END CATCH
@@ -1226,11 +1058,10 @@ GO
 		de ordenes de todo el histórico
 */
 CREATE VIEW Top10_clientes AS
-SELECT TOP 10 U.correo_electronico, U.nombre_completo, C.razon_social, C.nombre_comercial, SUM(total_orden) as consumo_total
-FROM Orden O, Usuario U, Cliente C
-WHERE C.id = U.Cliente_idCliente
-AND U.id = O.usuario_idUsuario
-GROUP BY U.correo_electronico, U.nombre_completo, C.razon_social, C.nombre_comercial;
+SELECT TOP 10 A.correo_electronico, A.nombre_completo, A.razon_social, A.nombre_comercial, SUM(total_orden) as consumo_total
+FROM Orden O, Usuario A
+WHERE A.id = O.usuario_idUsuario
+GROUP BY A.correo_electronico, A.nombre_completo, A.razon_social, A.nombre_comercial;
 GO
 /*
 		 d. Top 10 de productos más vendidos en
@@ -1247,13 +1078,29 @@ GO
 
 -- PROCEDIMIENTOS PARA OBTENER (selects)
 -- USUARIOS
--- Obtener usuarios
+-- Obtener usuarios y su detalle de clientes
 CREATE PROCEDURE obtener_usuarios
 AS
 BEGIN
-	SELECT id, correo_electronico, nombre_completo, telefono, fecha_nacimiento 
-	FROM Usuario
-	WHERE estado_idEstado <> 3; -- Todos menos estado eliminado
+		SELECT 
+			A.id,
+			A.correo_electronico,
+			A.nombre_completo,
+			A.fecha_nacimiento,
+			A.rol_idRol as idRol,
+			C.nombre as rol,
+			A.estado_idEstado as idEstado,
+			B.nombre as estado,
+			A.telefono,
+			A.razon_social,
+			A.nombre_comercial,
+			A.direccion_entrega,
+			A.fecha_creacion,
+			A.fecha_modificacion
+		FROM Usuario A, Estado B, Rol C
+		WHERE A.estado_idEstado = B.id
+		AND A.rol_idRol = C.id
+		AND estado_idEstado <> 3; -- Todos menos estado eliminado
 END
 GO
 
@@ -1263,10 +1110,26 @@ CREATE PROCEDURE obtener_usuario_por_id(
 )
 AS
 BEGIN
-	SELECT correo_electronico, nombre_completo, telefono, fecha_nacimiento, rol_idRol as idRol
-	FROM Usuario
-	WHERE id = @idUsuario
-	AND estado_idEstado <> 3; -- Todos menos estado eliminado
+		SELECT 
+			A.id,
+			A.correo_electronico,
+			A.nombre_completo,
+			A.fecha_nacimiento,
+			A.rol_idRol as idRol,
+			C.nombre as rol,
+			A.estado_idEstado as idEstado,
+			B.nombre as estado,
+			A.telefono,
+			A.razon_social,
+			A.nombre_comercial,
+			A.direccion_entrega,
+			A.fecha_creacion,
+			A.fecha_modificacion
+		FROM Usuario A, Estado B, Rol C
+		WHERE A.id =  @idUsuario
+		AND A.estado_idEstado = B.id
+		AND A.rol_idRol = C.id
+		AND estado_idEstado <> 3; -- Todos menos estado eliminado
 END
 GO
 
@@ -1340,34 +1203,6 @@ BEGIN
 	AND A.estado_idEstado = B.id
 	AND B.estado_idEstado = 1 -- Solo los productos con categoria 'ACTIVA', excluir productos con categoria INACTIVA (2) o ELIMINADA (3)
 	AND A.estado_idEstado <> 3; -- Todos menos estado eliminado
-END
-GO
-
-
-
--- CLIENTES
--- Obtener clientes
-CREATE PROCEDURE obtener_clientes
-AS
-BEGIN
-	SELECT  id, razon_social, nombre_comercial, direccion_entrega, telefono, correo_electronico, 
-	fecha_creacion, fecha_modificacion, estado_idEstado as idEstado
-	FROM Cliente
-	WHERE estado_idEstado <> 3; -- Todos menos estado eliminado
-END
-GO
-
--- Obtener clientes
-CREATE PROCEDURE obtener_cliente_por_id(
-	@idCliente INT
-)
-AS
-BEGIN
-	SELECT  id, razon_social, nombre_comercial, direccion_entrega, telefono, correo_electronico, 
-	fecha_creacion, fecha_modificacion, estado_idEstado as idEstado
-	FROM Cliente
-	WHERE id = @idCliente
-	AND estado_idEstado <> 3; -- Todos menos estado eliminado
 END
 GO
 

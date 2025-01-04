@@ -15,6 +15,16 @@ const userCreateDto = [
     .withMessage("El nombre no puede estar vacio")
     .isString()
     .withMessage('El nombre completo debe ser un string'),
+    body('idEstado')
+    .notEmpty()
+    .withMessage('El id del estado no puede ser vacio')
+    .isInt()
+    .withMessage('El id del estado debe ser numerico'),
+    body('idRol')
+    .notEmpty()
+    .withMessage('El id del rol no puede ser vacio')
+    .isInt()
+    .withMessage('El id del rol debe ser numerico'),    
   body('password')
     .isLength({ min: 5 })
     .withMessage('Password needs to be longer than 5'),
@@ -25,10 +35,24 @@ const userCreateDto = [
     .optional()
     .isString()
     .withMessage('Telefono'),
-  body('idCliente')
+  body('razon_social')
     .optional()
-    .isInt()
-    .withMessage("El id del cliente debe ser numerico")
+    .isString()
+    .withMessage('La razon social debe ser un string')
+    .isLength({ max: 245 })
+    .withMessage("La razon social debe ser menor a 245 caracteres"),
+  body('nombre_comercial')
+    .optional()
+    .isString()
+    .withMessage('El nombre comercial debe ser un string')
+    .isLength({ max: 100 })
+    .withMessage("El nombre comercial debe ser menor a 100 caracteres"),
+  body('direccion_entrega')
+    .optional()
+    .isString()
+    .withMessage('La direccion de entrega debe ser un string')
+    .isLength({ max: 200 })
+    .withMessage("La direccion de entrega debe ser menor a 200 caracteres")
 ];
 
 const userUpdateDto = [
@@ -71,10 +95,24 @@ const userUpdateDto = [
     .optional()
     .isString()
     .withMessage('Telefono'),
-  body('idCliente')
+  body('razon_social')
     .optional()
-    .isInt()
-    .withMessage("El id del cliente debe ser numerico")
+    .isString()
+    .withMessage('La razon social debe ser un string')
+    .isLength({ max: 245 })
+    .withMessage("La razon social debe ser menor a 245 caracteres"),
+  body('nombre_comercial')
+    .optional()
+    .isString()
+    .withMessage('El nombre comercial debe ser un string')
+    .isLength({ max: 100 })
+    .withMessage("El nombre comercial debe ser menor a 100 caracteres"),
+  body('direccion_entrega')
+    .optional()
+    .isString()
+    .withMessage('La direccion de entrega debe ser un string')
+    .isLength({ max: 200 })
+    .withMessage("La direccion de entrega debe ser menor a 200 caracteres")
 ];
 
 const userDeleteDto = [

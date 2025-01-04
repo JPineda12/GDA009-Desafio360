@@ -37,9 +37,13 @@ const UserService = {
         nombre: body.nombre_completo,
         pass: await this.hashPassword(body.password),
         fecha: body.fecha_nacimiento,
+        idEstado: body.idEstado,
+        idRol: body.idRol
       };
       if (body.telefono) replacements.telefono = body.telefono;
-      if (body.idCliente) replacements.idCliente = body.idCliente;
+      if (body.razon_social) replacements.razon_social = body.razon_social;
+      if (body.nombre_comercial) replacements.nombre_comercial = body.nombre_comercial;
+      if (body.direccion_entrega) replacements.direccion_entrega = body.direccion_entrega;
 
 
       const query = `
@@ -48,10 +52,12 @@ const UserService = {
           @nombre_completo=:nombre,
           @password=:pass,
           @fecha_nacimiento=:fecha,
-          @idRol=${RolEnum.CLIENTE},
-          @idEstado=${EstadoEnum.ACTIVO}
+          @idRol=:idRol,
+          @idEstado=:idEstado
           ${body.telefono ? ', @telefono=:telefono' : ''}
-          ${body.idCliente ? ', @idCliente=:idCliente' : ''}`;
+          ${body.razon_social ? ', @razon_social=:razon_social' : ''}
+          ${body.nombre_comercial ? ', @nombre_comercial=:nombre_comercial' : ''}
+          ${body.direccion_entrega ? ', @direccion_entrega=:direccion_entrega' : ''}`;
 
 
       const result = await sequelize.query(query, {
@@ -59,7 +65,7 @@ const UserService = {
         type: QueryTypes.INSERT,
       });
 
-      return result;
+      return result[0][0];
     } catch (error) {
       throw error;
     }
@@ -79,7 +85,9 @@ const UserService = {
         idEstado: data.idEstado,
       };
       if (data.telefono) replacements.telefono = data.telefono;
-      if (data.idCliente) replacements.idCliente = data.idCliente;
+      if (data.razon_social) replacements.razon_social = data.razon_social;
+      if (data.nombre_comercial) replacements.nombre_comercial = data.nombre_comercial;
+      if (data.direccion_entrega) replacements.direccion_entrega = data.direccion_entrega;
 
       const query = `
       EXEC editar_usuario
@@ -91,14 +99,16 @@ const UserService = {
           @idRol=:idRol,
           @idEstado=:idEstado
           ${data.telefono ? ', @telefono=:telefono' : ''}
-          ${data.idCliente ? ', @idCliente=:idCliente' : ''}`;
+          ${data.razon_social ? ', @razon_social=:razon_social' : ''}
+          ${data.nombre_comercial ? ', @nombre_comercial=:nombre_comercial' : ''}
+          ${data.direccion_entrega ? ', @direccion_entrega=:direccion_entrega' : ''}`;
 
       const result = await sequelize.query(query, {
         replacements,
         type: QueryTypes.UPDATE,
       });
 
-      return result;
+      return result[0][0];
     } catch (error) {
       throw error;
     }

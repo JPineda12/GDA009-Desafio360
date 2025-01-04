@@ -9,7 +9,6 @@ import ProductCategoryRoutes from './routes/productCategory.routes.js';
 import RoleRoutes from './routes/role.routes.js';
 import StateRoutes from './routes/state.routes.js';
 import ProductRoutes from './routes/product.routes.js';
-import CustomerRoutes from './routes/customer.routes.js';
 import OrderRoutes from './routes/order.routes.js';
 import LogMiddleware from './middlewares/log.middleware.js';
 import cors from 'cors';
@@ -18,7 +17,7 @@ dotenv.config();
 
 const app = express();
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: `${process.env.FRONTEND_URL}`,
     credentials: true,
   }));
 
@@ -34,7 +33,6 @@ app.use('/api/products-categories/', authenticateJWT, ProductCategoryRoutes.rout
 app.use('/api/roles/', authenticateJWT, RoleRoutes.router);
 app.use('/api/states/', authenticateJWT, StateRoutes.router)
 app.use('/api/products/', authenticateJWT, ProductRoutes.router);
-app.use('/api/customers/', authenticateJWT, CustomerRoutes.router);
 app.use('/api/orders/', authenticateJWT, OrderRoutes.router);
 
 app.use(errorMiddleware);
