@@ -3,6 +3,7 @@ import CustomerController from '../controllers/customer.controller.js';
 import validate from '../middlewares/validate.js';
 import CustomerDto from '../dto/customer.dto.js';
 import RolEnum from '../utils/constants/RolEnum.js';
+import RoleAuthorization from '../middlewares/roleAuth.middleware.js';
 
 const router = Router();
 

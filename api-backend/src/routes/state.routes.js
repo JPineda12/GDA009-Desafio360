@@ -2,6 +2,8 @@ import { Router } from 'express';
 import validate from '../middlewares/validate.js';
 import StateDto from '../dto/state.dto.js';
 import StateController from '../controllers/state.controller.js'
+import RoleAuthorization from '../middlewares/roleAuth.middleware.js';
+import RolEnum from '../utils/constants/RolEnum.js';
 
 const router = Router();
 

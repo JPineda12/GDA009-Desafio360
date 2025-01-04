@@ -10,7 +10,7 @@ const ProductCategoryService = {
       const replacements = {
         idUsuario: userCreatorid,
         nombre: body.nombre,
-        idEstado: EstadoEnum.ACTIVO,
+        idEstado: body.idEstado,
       };
 
       const query = `
@@ -23,8 +23,8 @@ const ProductCategoryService = {
         replacements,
         type: QueryTypes.INSERT,
       });
-      logger.debug('Create product category database result ', result );
-      return result;
+      console.log('Create product category database result ', result );
+      return result[0][0];
     } catch (error) {
       logger.error('Create category service error ', error)
       throw error;
@@ -65,7 +65,7 @@ const ProductCategoryService = {
         type: QueryTypes.UPDATE,
       });
       logger.debug('Update product category database result ', result)
-      return result;
+      return result[0][0];
     } catch (error) {
       logger.error('Update product category service error ', error)
       throw error;

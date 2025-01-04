@@ -3,6 +3,7 @@ import UserController from '../controllers/user.controller.js';
 import validate from '../middlewares/validate.js';
 import UserDto from '../dto/user.dto.js';
 import RolEnum from '../utils/constants/RolEnum.js';
+import RoleAuthorization from '../middlewares/roleAuth.middleware.js';
 
 const router = Router();
 
