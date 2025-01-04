@@ -4,8 +4,8 @@ import * as yup from 'yup';
 import { TextField, Button, Box, Typography, Card, CardContent } from '@mui/material';
 import React from 'react';
 import authService from '../../services/auth-service';
-import { useNotification } from '../../context/NotificationProvider';
-import { useAuth } from '../../context/AuthContext';
+import { useNotification } from '../../shared/context/NotificationProvider';
+import { useAuth } from '../../shared/context/AuthContext';
 
 interface LoginFormValues {
   correo_electronico: string;
@@ -37,11 +37,11 @@ const Login: React.FC = () => {
   };
 
   return (
-    <Card elevation={24} square={false} raised={true} sx={{ display: 'flex' }}>
+  <Card elevation={24} square={false} raised={true} sx={{ display: 'flex', mt: '10%' }}>
       <Box
         component="form"
         onSubmit={handleSubmit(onSubmit)}
-        sx={{ maxWidth: 400, m: 'auto' }}
+        sx={{ maxWidth: 400, mt: 'auto',  }}
       >
         <CardContent>
           <Typography variant="h4" align='center' color="textPrimary" gutterBottom>

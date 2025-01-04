@@ -15,10 +15,9 @@ const ImageService = {
                     'Content-Type': 'application/json',
                 },
             });
-            logger.info('Call image upload backend result: ', response)
+            logger.debug('Call image upload backend result: ', response)
             return response.data.imageUrl;
         } catch (error) {
-            logger.error('Call image upload backend error', error)
             throw error
         }
     }

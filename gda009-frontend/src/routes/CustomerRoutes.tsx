@@ -1,11 +1,11 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import Home from '../pages/home/Home';
+import CustomerHome from '../pages/customer-home/CustomerHome';
 import Cart from '../pages/cart/Cart';
 import OrderHistory from '../pages/orders/OrderHistory';
 
 const CustomerRoutes: React.FC = () => (
   <Routes>
-    <Route path="home" element={<Home />} />
+    <Route path="home" element={<CustomerHome />} />
     <Route path="cart" element={<Cart />} />
     <Route path="orders" element={<OrderHistory />} />
 

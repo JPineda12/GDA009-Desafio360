@@ -3,6 +3,7 @@ import ProductController from '../controllers/product.controller.js';
 import validate from '../middlewares/validate.js';
 import ProductDto from '../dto/product.dto.js';
 import RolEnum from '../utils/constants/RolEnum.js';
+import RoleAuthorization from '../middlewares/roleAuth.middleware.js';
 
 const router = Router();
 

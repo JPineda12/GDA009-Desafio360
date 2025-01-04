@@ -7,7 +7,12 @@ const productCategoryCreateDto = [
         .isString()
         .withMessage('El nombre tiene que ser un string')
         .isLength({ max: 45 })
-        .withMessage("El nombre debe ser menor a 45 caracteres")
+        .withMessage("El nombre debe ser menor a 45 caracteres"),
+    body('idEstado')
+        .notEmpty()
+        .withMessage('El id del estado no puede ser vacio')
+        .isInt()
+        .withMessage('El id del estado debe ser numerico'),
 ]
 
 const productCategoryUpdateDto = [
@@ -22,11 +27,16 @@ const productCategoryUpdateDto = [
         .isString()
         .withMessage('El nombre tiene que ser un string')
         .isLength({ max: 45 })
-        .withMessage("El nombre debe ser menor a 45 caracteres")
+        .withMessage("El nombre debe ser menor a 45 caracteres"),
+    body('idEstado')
+        .notEmpty()
+        .withMessage('El id del estado no puede ser vacio')
+        .isInt()
+        .withMessage('El id del estado debe ser numerico'),
 ]
 
 const ProductCategoryDto = {
-    productCategoryCreateDto,productCategoryUpdateDto
-  };
-  
-  export default ProductCategoryDto
+    productCategoryCreateDto, productCategoryUpdateDto
+};
+
+export default ProductCategoryDto

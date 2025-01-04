@@ -31,6 +31,7 @@ const httpClient = async (endpoint: string, options: RequestInit): Promise<any> 
     if (result.status === 'success' && response.ok) {
       return result.data;
     }
+    
     if (result.status === 'error') {
       const error = new Error(result.message || 'Request failed');
       (error as any).details = result.details || null;

@@ -415,14 +415,11 @@ BEGIN
 
 	COMMIT TRANSACTION;
 		-- Return la informacion de la categoria recien insertada
-		SELECT 
-			 id,
-			 usuario_idUsuario as idUsuario,
-			nombre,
-			estado_idEstado as idEstado,
-			fecha_creacion
-		FROM Categoria_Producto
-		WHERE id =  @newIdCategoria;
+		SELECT A.id, A.nombre, E.id as idEstado, E.nombre as estado, A.fecha_creacion, A.fecha_modificacion, B.nombre_completo as usuario_creador
+		FROM Categoria_Producto A, Usuario B, Estado E
+		WHERE A.id =  @newIdCategoria
+		AND A.usuario_idUsuario = B.id
+		AND A.estado_idEstado = E.id
 	END TRY
     BEGIN CATCH
         -- Rollback in case of error
@@ -479,14 +476,11 @@ BEGIN
 
 
 		-- Return la informacion de la categoria recien actualizada
-		SELECT 
-			 id,
-			nombre,
-			estado_idEstado as idEstado,
-			usuario_idUsuario as idUsuario,
-			fecha_modificacion
-		FROM Categoria_Producto
-		WHERE id =  @idCategoria;
+		SELECT A.id, A.nombre, E.id as idEstado, E.nombre as estado, A.fecha_creacion, A.fecha_modificacion, B.nombre_completo as usuario_creador
+		FROM Categoria_Producto A, Usuario B, Estado E
+		WHERE A.id =   @idCategoria
+		AND A.usuario_idUsuario = B.id
+		AND A.estado_idEstado = E.id
 	END TRY
     BEGIN CATCH
         -- Rollback in case of error
@@ -506,6 +500,8 @@ BEGIN
 
 END
 GO
+
+select * from Categoria_Producto;
 
 CREATE PROCEDURE eliminar_categoria_producto
 (
@@ -1308,9 +1304,10 @@ GO
 CREATE PROCEDURE obtener_categoria_producto
 AS
 BEGIN
-	SELECT A.id, A.nombre, A.estado_idEstado as idEstado, A.fecha_creacion, A.fecha_modificacion, B.nombre_completo as usuario_creador
-	FROM Categoria_Producto A, Usuario B
+	SELECT A.id, A.nombre, E.id as idEstado, E.nombre as estado, A.fecha_creacion, A.fecha_modificacion, B.nombre_completo as usuario_creador
+	FROM Categoria_Producto A, Usuario B, Estado E
 	WHERE A.usuario_idUsuario = B.id
+	AND A.estado_idEstado = E.id
 	AND A.estado_idEstado <> 3; -- Todos menos estado eliminado
 END
 GO
@@ -1320,25 +1317,28 @@ GO
 CREATE PROCEDURE obtener_productos
 AS
 BEGIN
-	SELECT  A.id, B.nombre, A.usuario_idUsuario as idUsuario, A.nombre, A.marca, A.codigo, 
-	A.stock, A.estado_idEstado as idEstado, A.precio, A.imagen_url, A.fecha_creacion, A.fecha_modificacion
-	FROM Producto A, Categoria_Producto B
+	SELECT  A.id, A.usuario_idUsuario as idUsuario, A.nombre, A.marca, A.codigo, 
+	A.stock,  B.nombre as categoria, B.id as idCategoria, A.estado_idEstado as idEstado, C.nombre, A.precio, A.imagen_url, A.fecha_creacion, A.fecha_modificacion
+	FROM Producto A, Categoria_Producto B, Estado C
 	WHERE A.Categoria_Producto_idCategoriaProducto = B.id
+	AND A.estado_idEstado = B.id
+	AND B.estado_idEstado = 1 -- Solo los productos con categoria 'ACTIVA', excluir productos con categoria INACTIVA (2) o ELIMINADA (3)
 	AND A.estado_idEstado <> 3; -- Todos menos estado eliminado
 END
 GO
-
 -- Obtener Producto por id
 CREATE PROCEDURE obtener_producto_por_id(
 	@idProducto INT
 )
 AS
 BEGIN
-	SELECT  A.id, B.nombre, A.usuario_idUsuario as idUsuario, A.nombre, A.marca, A.codigo, 
-	A.stock, A.estado_idEstado as idEstado, A.precio, A.imagen_url, A.fecha_creacion, A.fecha_modificacion
-	FROM Producto A, Categoria_Producto B
+	SELECT  A.id, A.usuario_idUsuario as idUsuario, A.nombre, A.marca, A.codigo, 
+	A.stock,  B.nombre as categoria, B.id as idCategoria, A.estado_idEstado as idEstado, C.nombre, A.precio, A.imagen_url, A.fecha_creacion, A.fecha_modificacion
+	FROM Producto A, Categoria_Producto B, Estado C
 	WHERE A.id = @idProducto
 	AND A.Categoria_Producto_idCategoriaProducto = B.id
+	AND A.estado_idEstado = B.id
+	AND B.estado_idEstado = 1 -- Solo los productos con categoria 'ACTIVA', excluir productos con categoria INACTIVA (2) o ELIMINADA (3)
 	AND A.estado_idEstado <> 3; -- Todos menos estado eliminado
 END
 GO
