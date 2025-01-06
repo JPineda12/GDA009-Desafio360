@@ -69,7 +69,7 @@ const ProductService = {
         type: QueryTypes.INSERT,
       });
       logger.debug('Create product database result ', result)
-      return result;
+      return result[0][0];
     } catch (error) {
       logger.error('Create product service error ', error)
       throw error;
@@ -78,6 +78,11 @@ const ProductService = {
 
   async updateProduct(idProduct, body, userCreatorid) {
     try {
+      let imageUrl = await ImageService.callImageUploadBackend(body.imagen_base64)
+      if (!imageUrl) {
+        imageUrl = ''
+      }
+
       const replacements = {
         idProducto: idProduct,
         nombre: body.nombre,
@@ -85,7 +90,7 @@ const ProductService = {
         codigo: body.codigo,
         stock: body.stock,
         precio: body.precio,
-        imagen_url: body.imagen_url,
+        imagen_url: imageUrl,
         idCategoria: body.idCategoria,
         idUsuario: userCreatorid,
         idEstado: body.idEstado
@@ -109,7 +114,7 @@ const ProductService = {
         type: QueryTypes.UPDATE,
       });
       logger.debug('Update product database result ', result);
-      return result;
+      return result[0][0];
     } catch (error) {
       logger.error('Update product service error ', error)
       throw error;

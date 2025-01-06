@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { productList, ProductInterface } from '../../services/product-service';
+import { productList } from '../../services/product-service';
 import { useNotification } from '../../shared/context/NotificationProvider';
 import { Box, CircularProgress } from '@mui/material';
 import ProductCard from '../../components/ProductCard/ProductCard';
+import { ProductInterface } from '../../shared/interfaces/ProductInterface';
 
 const ProductList: React.FC = () => {
   const { notify } = useNotification();

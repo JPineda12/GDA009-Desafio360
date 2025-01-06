@@ -1,13 +1,14 @@
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import ProductList from "../products/ProductList";
 import { useEffect, useState } from "react";
-import { categoriesList, ProductCategory } from "../../services/product-category";
+import { categoriesList } from "../../services/product-category";
 import { useNotification } from "../../shared/context/NotificationProvider";
+import { ProductCategoryInterface } from "../../shared/interfaces/ProductCategoryInterface";
 
 const CustomerHome: React.FC = () => {
     const { notify } = useNotification();
-  const [categories, setCategories] = useState<ProductCategory[]>([]);
+  const [categories, setCategories] = useState<ProductCategoryInterface[]>([]);
 
    useEffect(() => {
       const fetchProducts = async () => {
