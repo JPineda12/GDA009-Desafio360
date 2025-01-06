@@ -692,7 +692,7 @@ BEGIN
 			A.fecha_creacion,
 			A.fecha_modificacion
 		FROM Producto A, Estado B, Categoria_Producto C
-		WHERE A.id =  @idUsuario
+		WHERE A.id =  @idProducto
 		AND A.Categoria_Producto_idCategoriaProducto = C.id
 		AND A.estado_idEstado = B.id;
 	END TRY

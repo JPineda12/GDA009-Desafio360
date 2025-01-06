@@ -12,11 +12,12 @@ export interface ProductInterface{
     codigo: string,
     stock: number,
     precio: number,
-    imagen_url: string,
+    imagen_url?: string,
     idCategoria: number,
     categoria?: string,
     idEstado: number,
     estado?: string,
     fecha_creacion?: string,
     fecha_modificacion?: string,
+    imagen_base64?: string | null | ArrayBuffer,
 }

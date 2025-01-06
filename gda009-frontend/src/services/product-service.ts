@@ -25,8 +25,8 @@ export const productCreate = async (newProduct: ProductInterface): Promise<Produ
 };
 
 
-export const productUpdate = async (product: ProductInterface, productId: number): Promise<ProductInterface> => {
-    return await httpClient(`/products/${productId}`, {
+export const productUpdate = async (product: ProductInterface): Promise<ProductInterface> => {
+    return await httpClient(`/products/${product.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(product)

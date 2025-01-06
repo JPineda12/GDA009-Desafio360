@@ -16,36 +16,46 @@ import {
   TextField,
   Typography,
   CircularProgress,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
+  CardContent,
+  Card,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { useNotification } from '../../shared/context/NotificationProvider';
 import { productCreate, productDelete, productList, productUpdate } from '../../services/product-service';
 import { ProductInterface } from '../../shared/interfaces/ProductInterface';
+import EstadoEnum from '../../shared/utils/EstadoEnum';
+import { categoriesList } from '../../services/product-category';
+import { ProductCategoryInterface } from '../../shared/interfaces/ProductCategoryInterface';
 
 const schema = yup.object().shape({
   nombre: yup.string().required('El nombre es requerido').max(50, 'El nombre no puede exceder 50 caracteres'),
   marca: yup.string().required('La marca es requerida').max(50, 'La marca no puede exceder 50 caracteres'),
   codigo: yup.string().required('El codigo es requerido').max(50, 'El codigo no puede exceder 50 caracteres'),
-  stock: yup.number().required('El stock es requerido'),
-  precio: yup.number().required('El precio es requerido'),
-  imagen_url: yup.string().required('La imagen es requerida'),
+  stock: yup.number().typeError('El stock debe ser un número').min(0, 'Debe ser mayor o igual a 0').required('El stock es requerido'),
+  precio: yup.number().typeError('El precio debe ser un número').min(0, 'Debe ser mayor o igual a 0').required('El precio es requerido'),
   idCategoria: yup.number().required('La categoria es requerido'),
   idEstado: yup.number().required('El estado es requerido')
 });
 
 const ProductCRUD: React.FC = () => {
   const [productos, setProductos] = useState<ProductInterface[]>([]);
+  const [categorias, setCategorias] = useState<ProductCategoryInterface[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [currentProducto, setCurrentProducto] = useState<ProductInterface | null>(null);
   const { notify } = useNotification();
   const [loading, setLoading] = useState(true);
-
+  const [imagenFileName, setImagenFileName] = useState<string>('');
 
   const methods = useForm<ProductInterface>({
     resolver: yupResolver(schema),
@@ -60,7 +70,7 @@ const ProductCRUD: React.FC = () => {
       idEstado: 1
     },
   });
-  const { handleSubmit, reset, control, formState: { errors } } = methods;
+  const { handleSubmit, setValue, reset, control, formState: { errors } } = methods;
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -75,6 +85,21 @@ const ProductCRUD: React.FC = () => {
     };
 
     fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await categoriesList();
+        setCategorias(data);
+      } catch (error) {
+        notify('Error obteniendo categorias, intente mas tarde', 'error')
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
   }, []);
 
 
@@ -96,7 +121,8 @@ const ProductCRUD: React.FC = () => {
   const handleCloseDialog = () => {
     reset();
     setOpenDialog(false);
-
+    setImagenFileName('');
+    setValue('imagen_base64', null);
     setCurrentProducto(null);
   };
 
@@ -111,6 +137,20 @@ const ProductCRUD: React.FC = () => {
     setCurrentProducto(null);
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64Image = event.target?.result as string;
+        setValue('imagen_base64', base64Image.split(',')[1]);
+        setImagenFileName(file.name);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -123,7 +163,7 @@ const ProductCRUD: React.FC = () => {
   const onSubmit = async (data: ProductInterface) => {
     if (currentProducto) {//Es editar
       //Llamar al endpoint de update
-      const updatedProduct: ProductInterface = await productUpdate(data, currentProducto.id!);
+      const updatedProduct: ProductInterface = await productUpdate(data);
       setProductos(productos.map(p => p.id === currentProducto.id ? { ...currentProducto, ...updatedProduct } : p));
       notify('Producto actualizado satisfactoriamente', 'info')
     } else { //Es crear
@@ -193,7 +233,19 @@ const ProductCRUD: React.FC = () => {
                   <TableCell align="center">{producto.codigo}</TableCell>
                   <TableCell align="center">{producto.stock}</TableCell>
                   <TableCell align="center">{producto.precio}</TableCell>
-                  <TableCell align="center">{producto.nombre}</TableCell>
+                  <TableCell align="center">
+                    <img
+                      src={producto.imagen_url}
+                      alt={producto.nombre}
+                      style={{
+                        width: '70%',
+                        maxWidth: '100px',
+                        height: 'auto',
+                        borderRadius: '8px',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  </TableCell>
                   <TableCell align="center">{producto.categoria}</TableCell>
                   <TableCell align="center">{producto.estado!}</TableCell>
                   <TableCell align="center">
@@ -259,8 +311,8 @@ const ProductCRUD: React.FC = () => {
                     margin="dense"
                     label="Codigo"
                     fullWidth
-                    error={!!errors.marca}
-                    helperText={errors.marca?.message}
+                    error={!!errors.codigo}
+                    helperText={errors.codigo?.message}
                   />
                 )}
               />
@@ -302,6 +354,92 @@ const ProductCRUD: React.FC = () => {
                     error={!!errors.precio}
                     helperText={errors.precio?.message}
                   />
+                )}
+              />
+
+              <Controller
+                name="imagen_base64"
+                control={control}
+                render={({ field }) => (
+                  <Box sx={{ mt: 2 }}>
+                    {(currentProducto && !imagenFileName) && (
+                      <Box sx={{ mb: 2, textAlign: 'center' }}>
+                        <Card sx={{ maxWidth: '200px', mx: 'auto' }}>
+                          <CardContent>
+                            <img
+                              src={currentProducto.imagen_url}
+                              alt="Producto existente"
+                              style={{ width: '150px', height: 'auto', borderRadius: '8px' }}
+                            />
+                          </CardContent>
+                        </Card>
+                      </Box>
+                    )}
+
+                    <Box sx={{ textAlign: 'center' }}>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        Selecciona una nueva imagen
+                      </Typography>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        style={{ display: 'none' }}
+                        id="imagen-input"
+                      />
+                      <label htmlFor="imagen-input">
+                        <Button
+                          variant="contained"
+                          component="span"
+                          sx={{
+                            bgcolor: 'primary.main',
+                            '&:hover': { bgcolor: 'primary.dark' },
+                            textTransform: 'none',
+                            fontWeight: 600,
+                            mt: 2,
+                          }}
+                        >
+                          Subir imagen
+                        </Button>
+                      </label>
+                      {imagenFileName && (
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                          {`Archivo seleccionado: ${imagenFileName}`}
+                        </Typography>
+                      )}
+                    </Box>
+                  </Box>
+                )}
+              />
+
+              <Controller
+                name="idCategoria"
+                control={control}
+                render={({ field }) => (
+                  <FormControl sx={{ mt: 2 }} fullWidth margin="dense" error={!!errors.idCategoria}>
+                    <InputLabel>Categoria</InputLabel>
+                    <Select {...field} label="Estado">
+                      {categorias.map((categoria) => (
+                        <MenuItem key={categoria.id} value={categoria.id}>{categoria.nombre}</MenuItem>
+                      ))}
+                    </Select>
+                    {errors.idCategoria && <FormHelperText>{errors.idCategoria.message}</FormHelperText>}
+                  </FormControl>
+                )}
+              />
+
+              <Controller
+                name="idEstado"
+                control={control}
+                render={({ field }) => (
+                  <FormControl sx={{ mt: 2 }} fullWidth margin="dense" error={!!errors.idEstado}>
+                    <InputLabel>Estado</InputLabel>
+                    <Select {...field} label="Estado">
+                      <MenuItem value={EstadoEnum.ACTIVO}>Activo</MenuItem>
+                      <MenuItem value={EstadoEnum.INACTIVO}>Inactivo</MenuItem>
+                    </Select>
+                    {errors.idEstado && <FormHelperText>{errors.idEstado.message}</FormHelperText>}
+                  </FormControl>
                 )}
               />
 

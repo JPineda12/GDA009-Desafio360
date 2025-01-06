@@ -76,13 +76,13 @@ const productUpdateDto = [
         .withMessage('El precio no puede ser vacio')
         .isNumeric()
         .withMessage('El precio tiene que ser numerico'),
-    body('imagen_url')
+    body('imagen_base64')
         .notEmpty()
         .withMessage('La imagen no puede ser vacia')
         .isString()
         .withMessage('La imagen tiene que ser un string')
-        .isLength({ max: 500 })
-        .withMessage("La url de la imagen debe ser menor a 500 caracteres"),
+        .isBase64()
+        .withMessage('La imagen debe estar en formato base64'),
     body('idCategoria')
         .optional()
         .isInt()
@@ -95,23 +95,23 @@ const productUpdateDto = [
 
 
 const productDeleteDto = [
-  param('idProducto')
-    .notEmpty()
-    .withMessage('El id del producto no puede ser vacio')
-    .isInt()
-    .withMessage('El id del producto debe ser numerico')
+    param('idProducto')
+        .notEmpty()
+        .withMessage('El id del producto no puede ser vacio')
+        .isInt()
+        .withMessage('El id del producto debe ser numerico')
 ]
 
 const productByIdDto = [
-  param('idProducto')
-    .notEmpty()
-    .withMessage('El id del producto no puede ser vacio')
-    .isInt()
-    .withMessage('El id del producto debe ser numerico')
+    param('idProducto')
+        .notEmpty()
+        .withMessage('El id del producto no puede ser vacio')
+        .isInt()
+        .withMessage('El id del producto debe ser numerico')
 ]
 
 const ProductDto = {
     productCreateDto, productUpdateDto, productByIdDto, productDeleteDto
-  };
-  
-  export default ProductDto
+};
+
+export default ProductDto

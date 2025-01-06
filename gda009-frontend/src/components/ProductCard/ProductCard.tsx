@@ -1,9 +1,9 @@
 import React from 'react';
-import { ProductInterface } from '../../services/product-service';
 import { Button, Card, CardActions, CardContent, CardMedia, Typography } from '@mui/material';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { CartItem } from '../../shared/interfaces/ShoppingCartInterface';
 import { useCart } from '../../shared/context/ShoppingCartContext';
+import { ProductInterface } from '../../shared/interfaces/ProductInterface';
 
 const ProductCard: React.FC<{ product: ProductInterface }> = ({ product }) => {
     const { cartItems, setCartItems } = useCart();
