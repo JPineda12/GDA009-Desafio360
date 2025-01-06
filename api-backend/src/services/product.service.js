@@ -69,7 +69,7 @@ const ProductService = {
         type: QueryTypes.INSERT,
       });
       logger.debug('Create product database result ', result)
-      return result;
+      return result[0][0];
     } catch (error) {
       logger.error('Create product service error ', error)
       throw error;
@@ -109,7 +109,7 @@ const ProductService = {
         type: QueryTypes.UPDATE,
       });
       logger.debug('Update product database result ', result);
-      return result;
+      return result[0][0];
     } catch (error) {
       logger.error('Update product service error ', error)
       throw error;

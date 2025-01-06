@@ -80,14 +80,16 @@ const TopBar: React.FC = () => {
                                     <Button variant="outlined" color="inherit" startIcon={<FilterFramesIcon />} sx={{ mr: 1 }}>
                                         Ordenes
                                     </Button>
-                                    <Button variant="outlined" color="inherit" 
-                                    startIcon={<AutoStoriesIcon />} sx={{ mr: 1 }} component={Link} to="/operator/categories">
+                                    <Button variant="outlined" color="inherit"
+                                        startIcon={<AutoStoriesIcon />} sx={{ mr: 1 }} component={Link} to="/operator/categories">
                                         Categorias
                                     </Button>
-                                    <Button variant="outlined" color="inherit" startIcon={<InventoryIcon />} sx={{ mr: 1 }}>
+                                    <Button variant="outlined" color="inherit" startIcon={<InventoryIcon />}
+                                        sx={{ mr: 1 }} component={Link} to="/operator/products">
                                         Productos
                                     </Button>
-                                    <Button variant="outlined" color="inherit" startIcon={<PeopleIcon />} sx={{ mr: 1 }}>
+                                    <Button variant="outlined" color="inherit" startIcon={<PeopleIcon />}
+                                        sx={{ mr: 1 }} component={Link} to="/operator/users">
                                         Usuarios
                                     </Button>
                                 </>

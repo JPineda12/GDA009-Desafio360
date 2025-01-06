@@ -45,7 +45,7 @@ export default function CategoriaList() {
   const [loading, setLoading] = useState(true);
 
 
-  const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<CategoriaForm>({
+  const { register, handleSubmit, setValue, reset } = useForm<CategoriaForm>({
     resolver: yupResolver(schema),
     defaultValues: {
       nombre: '',
