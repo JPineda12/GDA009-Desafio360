@@ -47,7 +47,7 @@ const CartDropdown: React.FC<ShoppingCartProps> = ({ elementoPadre: anchorEl, on
             telefono: userInfo.telefono || "Sin teléfono",
             correo_electronico: userInfo.correo_electronico,
             total_orden: cartItems.reduce((total, item) => total + item.precio * item.cantidad, 0),
-            detalles_orden: cartItems.map((item)=> ({
+            detalles_orden: cartItems.map((item) => ({
                 Producto_idProducto: item.id!,
                 cantidad: item.cantidad,
                 precio: item.precio,
@@ -59,7 +59,6 @@ const CartDropdown: React.FC<ShoppingCartProps> = ({ elementoPadre: anchorEl, on
     const generarOrden = async () => {
         try {
             const userInfo = await userById(user?.id!)
-            //const newOrder = await orderCreate();
             const orderMapped = mapUserAndCartToOrder(userInfo);
             await orderCreate(orderMapped);
             clearCart();
@@ -69,6 +68,10 @@ const CartDropdown: React.FC<ShoppingCartProps> = ({ elementoPadre: anchorEl, on
             notify(error.message, 'error');
         }
     }
+
+    const limpiarCarrito = async () => {
+        clearCart();
+    }    
 
 
     return (
@@ -123,6 +126,9 @@ const CartDropdown: React.FC<ShoppingCartProps> = ({ elementoPadre: anchorEl, on
                     ))}
                     <Divider></Divider>
                     <Box sx={{ textAlign: 'center' }}>
+                    <Button sx={{mr: 2}} size='large' variant='outlined' color='error' onClick={() => limpiarCarrito()}>
+                            Limpiar
+                        </Button>                        
                         <Button size='large' variant='outlined' color='success' onClick={() => generarOrden()}>
                             Comprar
                         </Button>
