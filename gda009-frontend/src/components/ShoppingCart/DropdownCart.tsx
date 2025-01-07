@@ -5,6 +5,14 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import { CartItem } from '../../shared/interfaces/ShoppingCartInterface';
 import { useCart } from '../../shared/context/ShoppingCartContext';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { useNotification } from '../../shared/context/NotificationProvider';
+import { orderCreate } from '../../services/order-service';
+import { useAuth } from '../../shared/context/AuthContext';
+import { userById } from '../../services/user-service';
+import { UserInterface } from '../../shared/interfaces/UserInterface';
+import EstadoEnum from '../../shared/utils/EstadoEnum';
+import { OrderCreateInterface } from '../../shared/interfaces/OrderInterface';
+import { useNavigate } from 'react-router-dom';
 
 interface ShoppingCartProps {
     elementoPadre: HTMLElement | null;
@@ -12,7 +20,10 @@ interface ShoppingCartProps {
 }
 
 const CartDropdown: React.FC<ShoppingCartProps> = ({ elementoPadre: anchorEl, onClose }) => {
-    const { cartItems, setCartItems } = useCart();
+    const { cartItems, setCartItems, clearCart } = useCart();
+    const { user } = useAuth();
+    const { notify } = useNotification();
+    const navigate = useNavigate();
 
     const updateQuantity = (id: number, quantToAdd: number) => {
         const updatedCart = cartItems.map((item: CartItem) =>
@@ -26,6 +37,41 @@ const CartDropdown: React.FC<ShoppingCartProps> = ({ elementoPadre: anchorEl, on
         const updatedCart = cartItems.filter(item => item.id !== id);
         setCartItems(updatedCart);
     };
+
+    const mapUserAndCartToOrder = (userInfo: UserInterface): OrderCreateInterface => {
+        return {
+            usuario_idUsuario: userInfo.id!,
+            estado_idEstado: EstadoEnum.PENDIENTE,
+            nombre_completo: userInfo.nombre_completo,
+            direccion: userInfo.direccion_entrega || "Dirección no proporcionada",
+            telefono: userInfo.telefono || "Sin teléfono",
+            correo_electronico: userInfo.correo_electronico,
+            total_orden: cartItems.reduce((total, item) => total + item.precio * item.cantidad, 0),
+            detalles_orden: cartItems.map((item)=> ({
+                Producto_idProducto: item.id!,
+                cantidad: item.cantidad,
+                precio: item.precio,
+                subtotal: item.precio * item.cantidad,
+            })),
+        };
+    }
+
+    const generarOrden = async () => {
+        try {
+            console.log("MY USER IS: ", user)
+            const userInfo = await userById(user?.id!)
+            console.log("BACKEND USER: ", userInfo)
+            //const newOrder = await orderCreate();
+            const orderMapped = mapUserAndCartToOrder(userInfo);
+            console.log(orderMapped);
+            await orderCreate(orderMapped);
+            clearCart();
+            notify('Order Generada satisfactoriamente')
+            navigate('/customer/orders');
+        } catch (error: any) {
+            notify(error.message, 'error');
+        }
+    }
 
 
     return (
@@ -61,16 +107,16 @@ const CartDropdown: React.FC<ShoppingCartProps> = ({ elementoPadre: anchorEl, on
                                 </Typography>
                             </Box>
                             <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
-                                <IconButton size="small" onClick={() => updateQuantity(item.id, -1)}>
+                                <IconButton size="small" onClick={() => updateQuantity(item?.id!, -1)}>
                                     <RemoveIcon />
                                 </IconButton>
-                                <IconButton size="small" onClick={() => updateQuantity(item.id, 1)}>
+                                <IconButton size="small" onClick={() => updateQuantity(item.id!, 1)}>
                                     <AddIcon />
                                 </IconButton>
                                 <IconButton
                                     size="small"
                                     color="error"
-                                    onClick={() => deleteItem(item.id)}
+                                    onClick={() => deleteItem(item.id!)}
                                     sx={{ ml: 1 }}
                                 >
                                     <DeleteForeverIcon />
@@ -79,10 +125,10 @@ const CartDropdown: React.FC<ShoppingCartProps> = ({ elementoPadre: anchorEl, on
                         </MenuItem>
                     ))}
                     <Divider></Divider>
-                    <Box sx={{textAlign: 'center'}}>
-                    <Button size='large' variant='outlined' color='success'>
-                        Comprar
-                    </Button>
+                    <Box sx={{ textAlign: 'center' }}>
+                        <Button size='large' variant='outlined' color='success' onClick={() => generarOrden()}>
+                            Comprar
+                        </Button>
 
                     </Box>
                 </>

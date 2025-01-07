@@ -9,6 +9,7 @@ export interface UserInterface{
     id?: number,
     correo_electronico: string,
     nombre_completo: string,
+    nombre?: string,
     password: string,
     fecha_nacimiento: string,
     telefono?: string,
