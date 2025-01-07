@@ -58,12 +58,9 @@ const CartDropdown: React.FC<ShoppingCartProps> = ({ elementoPadre: anchorEl, on
 
     const generarOrden = async () => {
         try {
-            console.log("MY USER IS: ", user)
             const userInfo = await userById(user?.id!)
-            console.log("BACKEND USER: ", userInfo)
             //const newOrder = await orderCreate();
             const orderMapped = mapUserAndCartToOrder(userInfo);
-            console.log(orderMapped);
             await orderCreate(orderMapped);
             clearCart();
             notify('Order Generada satisfactoriamente')

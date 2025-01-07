@@ -898,19 +898,14 @@ BEGIN
         COMMIT TRANSACTION;
 
         -- Retornar detalles de la orden creada
-        SELECT 
-            id,
-            usuario_idUsuario AS idUsuario,
-            estado_idEstado AS idEstado,
-            nombre_completo,
-            direccion,
-            telefono,
-            correo_electronico,
-            fecha_entrega,
-            total_orden,
-            fecha_creacion
-        FROM Orden
-        WHERE id = @OrdenId;
+		SELECT  A.id, B.correo_electronico as correo_usuario, A.usuario_idUsuario as idUsuario, c.nombre as estado, 
+		A.estado_idEstado as idEstado, A.nombre_completo, A.direccion, A.telefono, A.correo_electronico as correo_orden, 
+		A.fecha_entrega, A.total_orden, A.fecha_creacion, A.fecha_modificacion
+		FROM Orden A, Usuario B, Estado C
+		WHERE A.id =  @OrdenId
+		AND A.usuario_idUsuario = B.id
+		AND A.estado_idEstado = C.id
+		AND A.estado_idEstado <> 3; -- Todos menos estado eliminado
 
     END TRY
     BEGIN CATCH
@@ -954,19 +949,14 @@ BEGIN
     WHERE id = @OrdenId;
 	COMMIT TRANSACTION;
 		-- Return la informacion de la orden recien insertada
-		SELECT 
-			 id,
-			usuario_idUsuario as idUsuario,
-			estado_idEstado as idEstado,
-			nombre_completo,
-			direccion,
-			telefono,
-			correo_electronico,
-			fecha_entrega,
-			total_orden
-			fecha_modificacion
-		FROM Orden
-		WHERE id =  @OrdenId;
+		SELECT  A.id, B.correo_electronico as correo_usuario, A.usuario_idUsuario as idUsuario, c.nombre as estado, 
+		A.estado_idEstado as idEstado, A.nombre_completo, A.direccion, A.telefono, A.correo_electronico as correo_orden, 
+		A.fecha_entrega, A.total_orden, A.fecha_creacion, A.fecha_modificacion
+		FROM Orden A, Usuario B, Estado C
+		WHERE A.id =  @OrdenId
+		AND A.usuario_idUsuario = B.id
+		AND A.estado_idEstado = C.id
+		AND A.estado_idEstado <> 3; -- Todos menos estado eliminado
 	END TRY
     BEGIN CATCH
         -- Rollback in case of error
@@ -994,15 +984,18 @@ BEGIN
 	BEGIN TRY
 	BEGIN TRANSACTION
     UPDATE Orden
-    SET fecha_entrega = GETDATE(), fecha_modificacion = GETDATE()
+    SET estado_idEstado = 5, fecha_entrega = GETDATE(), fecha_modificacion = GETDATE()
 	WHERE id = @idOrden;
 
 	COMMIT TRANSACTION;
-		SELECT 
-			 id,
-			fecha_entrega
-		FROM Orden
-		WHERE id =  @idOrden;
+		SELECT  A.id, B.correo_electronico as correo_usuario, A.usuario_idUsuario as idUsuario, c.nombre as estado, 
+		A.estado_idEstado as idEstado, A.nombre_completo, A.direccion, A.telefono, A.correo_electronico as correo_orden, 
+		A.fecha_entrega, A.total_orden, A.fecha_creacion, A.fecha_modificacion
+		FROM Orden A, Usuario B, Estado C
+		WHERE A.id =  @idOrden
+		AND A.usuario_idUsuario = B.id
+		AND A.estado_idEstado = C.id
+		AND A.estado_idEstado <> 3; -- Todos menos estado eliminado
 	END TRY
     BEGIN CATCH
         -- Rollback in case of error
@@ -1021,6 +1014,65 @@ BEGIN
     END CATCH	
 END;
 GO
+
+
+CREATE PROCEDURE rechazar_orden
+    @json NVARCHAR(MAX)
+AS
+BEGIN
+    BEGIN TRY
+        BEGIN TRANSACTION
+        DECLARE @idOrden INT
+        SELECT @idOrden = JSON_VALUE(@json, '$.id');
+
+        -- Actualizar el estado a rechazado
+        UPDATE Orden
+        SET Estado_idEstado = 6 -- Estado anulada
+        WHERE id = @idOrden;
+
+        -- Tabla temporal para los detalles
+        DECLARE @detallesOrden TABLE (
+            Producto_idProducto INT,
+            cantidad INT
+        );
+
+        INSERT INTO @detallesOrden (Producto_idProducto, cantidad)
+        SELECT 
+            Producto_idProducto,
+            cantidad
+        FROM OPENJSON(@json, '$.detalles_orden')
+        WITH (
+            Producto_idProducto INT '$.Producto_idProducto',
+            cantidad INT '$.cantidad'
+        );
+
+        -- Restaurar stock
+        UPDATE Producto
+        SET stock = stock + d.cantidad
+        FROM Producto p
+        INNER JOIN @detallesOrden d ON p.id= d.Producto_idProducto;
+
+        COMMIT TRANSACTION;
+		
+		SELECT  A.id, B.correo_electronico as correo_usuario, A.usuario_idUsuario as idUsuario, c.nombre as estado, 
+		A.estado_idEstado as idEstado, A.nombre_completo, A.direccion, A.telefono, A.correo_electronico as correo_orden, 
+		A.fecha_entrega, A.total_orden, A.fecha_creacion, A.fecha_modificacion
+		FROM Orden A, Usuario B, Estado C
+		WHERE A.id =  @idOrden
+		AND A.usuario_idUsuario = B.id
+		AND A.estado_idEstado = C.id
+    END TRY
+    BEGIN CATCH
+        -- Revertir la transacción en caso de error
+        ROLLBACK TRANSACTION;
+
+        -- Mostrar el error
+        PRINT ERROR_MESSAGE();
+    END CATCH
+END;
+
+
+
 
 -- CREACION DE ROLES BASE
 EXEC crear_rol @nombre = 'Administrador';
@@ -1153,7 +1205,7 @@ BEGIN
 	SELECT id, correo_electronico, nombre_completo, password, rol_idRol as idRol
 	FROM Usuario
 	WHERE correo_electronico = @correo_electronico
-	AND estado_idEstado <> 3; -- no estado eliminado
+	AND estado_idEstado NOT IN (2,3); -- no estado eliminado
 END
 GO
 
@@ -1253,7 +1305,8 @@ BEGIN
 	FROM Orden A, Usuario B, Estado C
 	WHERE A.usuario_idUsuario = B.id
 	AND A.estado_idEstado = C.id
-	AND A.estado_idEstado <> 3; -- Todos menos estado eliminado
+	AND A.estado_idEstado <> 3 -- Todos menos estado eliminado
+	ORDER BY A.id desc;
 END
 GO
 
@@ -1270,7 +1323,7 @@ BEGIN
 	WHERE A.id =  @idOrden
 	AND A.usuario_idUsuario = B.id
 	AND A.estado_idEstado = C.id
-	AND A.estado_idEstado <> 3; -- Todos menos estado eliminado
+	AND A.estado_idEstado <> 3 -- Todos menos estado eliminado
 END
 GO
 
@@ -1287,7 +1340,8 @@ BEGIN
 	WHERE A.usuario_idUsuario =  @idUsuario
 	AND A.usuario_idUsuario = B.id
 	AND A.estado_idEstado = C.id
-	AND A.estado_idEstado <> 3; -- Todos menos estado eliminado
+	AND A.estado_idEstado <> 3 -- Todos menos estado eliminado
+	ORDER BY A.id desc;
 END
 GO
 
@@ -1304,3 +1358,4 @@ BEGIN
 	AND A.Producto_idProducto = B.id;
 END
 GO
+

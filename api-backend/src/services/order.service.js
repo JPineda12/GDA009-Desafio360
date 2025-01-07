@@ -20,7 +20,7 @@ const OrderService = {
 
   async getOrdersByUserId(idUsuario) {
     try {
-      const [result] = await sequelize.query('EXEC obtener_orden_por_idUsuario @idUsuario = :id', {
+      const result = await sequelize.query('EXEC obtener_orden_por_idUsuario @idUsuario = :id', {
         replacements: { id: idUsuario },
         type: QueryTypes.SELECT,
       });
@@ -115,7 +115,7 @@ const OrderService = {
 
   async getOrderDetail(idOrden) {
     try {
-      const [result] = await sequelize.query('EXEC obtener_detalle_orden @idOrden = :id', {
+      const result = await sequelize.query('EXEC obtener_detalle_orden @idOrden = :id', {
         replacements: { id: idOrden },
         type: QueryTypes.SELECT,
       });
@@ -125,7 +125,29 @@ const OrderService = {
       logger.error('Get order detail service error ', exception)
       throw exception
     }
-  }
+  },
+
+  async setRejectedOrder(data) {
+    try {
+      const replacements = {
+        ordenJson: JSON.stringify(data),
+      };
+
+      const query = `
+      EXEC rechazar_orden
+          @json=:ordenJson`;
+
+      const result = await sequelize.query(query, {
+        replacements,
+        type: QueryTypes.UPDATE,
+      });
+      logger.debug('Rejected order database result', result)
+      return result;
+    } catch (error) {
+      logger.error('Rejected delivered order service error ', error)
+      throw error;
+    }
+  },
 
 }
 
