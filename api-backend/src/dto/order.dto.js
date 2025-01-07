@@ -162,8 +162,37 @@ const orderById = [
 ]
 
 
+const orderRejectDto = [
+  body('id')
+    .notEmpty()
+    .withMessage('El id de la orden no puede ser vacio')
+    .isInt()
+    .withMessage('El id de la orden debe ser numerico'),
+  body('detalles_orden')
+    .isArray()
+    .withMessage('Detalles debe ser un arreglo')
+    .custom((value) => {
+      if (value.length === 0) {
+        throw new Error('Detalles no puede estar vacío');
+      }
+
+      value.forEach((item, index) => {
+        if (!item.Producto_idProducto || !item.cantidad || !item.precio || !item.subtotal) {
+          throw new Error(`El producto en el índice ${index} debe tener Producto_idProducto, cantidad, precio, y subtotal`);
+        }
+
+        if (typeof item.cantidad !== 'number' || item.cantidad <= 0) {
+          throw new Error(`La cantidad del producto en el índice ${index} debe ser un número mayor a 0`);
+        }
+      });
+
+      return true;
+    }),
+];
+
+
 const OrerDto = {
-  orderCreateDto, orderUpdateDto, orderByUserId, orderById
+  orderCreateDto, orderUpdateDto, orderByUserId, orderById, orderRejectDto
 };
 
 export default OrerDto

@@ -18,24 +18,22 @@ import {
 } from '@mui/material';
 import { useNotification } from '../../shared/context/NotificationProvider';
 import { UserOrderInterface } from '../../shared/interfaces/OrderInterface';
-import { orderDetail, ordersByUserId } from '../../services/order-service';
+import { orderDeliver, orderDetail, orderReject, ordersGetAll } from '../../services/order-service';
 import { OrderDetailInterface } from '../../shared/interfaces/OrderDetailInterface';
 import EstadoEnum from '../../shared/utils/EstadoEnum';
-import { useAuth } from '../../shared/context/AuthContext';
 
-const OrderHistory: React.FC = () => {
+const OrderList: React.FC = () => {
   const [orders, setOrders] = useState<UserOrderInterface[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [currentOrderDetails, setCurrentOrderDetails] = useState<OrderDetailInterface[]>([]);
   const [currentOrder, setCurrentOrder] = useState<UserOrderInterface | null>(null);
   const { notify } = useNotification();
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await ordersByUserId(user?.id!);
+        const response = await ordersGetAll();
         setOrders(response)
       } catch (error) {
         notify('Error obteniendo órdenes, intente más tarde', 'error');
@@ -53,6 +51,40 @@ const OrderHistory: React.FC = () => {
       const response = await orderDetail(order.id);
       setCurrentOrderDetails(response);
       setOpenDialog(true);
+    } catch (error) {
+      notify('Error obteniendo detalles de la orden, intente más tarde', 'error');
+    }
+  };
+
+  const mapToRejectOrderInterface = (userOrder: UserOrderInterface, orderDetails: OrderDetailInterface[]
+  ) => {
+    return {
+      id: userOrder.id,
+      detalles_orden: orderDetails.map(detail => ({
+        Producto_idProducto: detail.idProducto,
+        cantidad: detail.cantidad,
+        precio: detail.precio,
+        subtotal: detail.subtotal,
+      })),
+    };
+  };
+
+
+  const handleOrder = async (order: UserOrderInterface, isConfirmOrder: boolean) => {
+    try {
+
+      let updatedOrder: UserOrderInterface;
+
+      if (isConfirmOrder) {
+        updatedOrder = await orderDeliver(order.id);
+      } else {
+        const detail: OrderDetailInterface[] = await orderDetail(order.id);
+        updatedOrder = await orderReject(mapToRejectOrderInterface(order, detail));
+      }
+      setOrders(orders.map(c => c.id === order.id ? { ...order, ...updatedOrder } : c));
+      notify('Solicitud realizada satisfactoriamente', 'info')
+      window.location.reload();
+    
     } catch (error) {
       notify('Error obteniendo detalles de la orden, intente más tarde', 'error');
     }
@@ -103,10 +135,32 @@ const OrderHistory: React.FC = () => {
                 <TableCell align="center">
                   <Button
                     variant="contained"
+                    size='small'
                     onClick={() => handleOpenDialog(order)}
                   >
                     Ver Detalles
                   </Button>
+                  {order.idEstado === EstadoEnum.PENDIENTE && (
+                    <>
+                      <Button sx={{ 'ml': 2 }}
+                        variant="contained"
+                        color='success'
+                        size='small'
+                        onClick={() => handleOrder(order, true)}
+                      >
+                        Confirmar Orden
+                      </Button>
+                      <Button sx={{ 'ml': 1 }}
+                        variant="contained"
+                        color='error'
+                        size='small'
+                        onClick={() => handleOrder(order, false)}
+                      >
+                        Rechazar Orden
+                      </Button>
+                    </>
+                  )
+                  }
                 </TableCell>
               </TableRow>
             ))}
@@ -169,4 +223,4 @@ const OrderHistory: React.FC = () => {
   );
 }
 
-export default OrderHistory;
+export default OrderList;

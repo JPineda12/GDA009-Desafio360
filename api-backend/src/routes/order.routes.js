@@ -29,6 +29,9 @@ router.put('/deliver/:idOrden', validate(OrderDto.orderById),
     RoleAuthorization(RolEnum.ADMIN, RolEnum.OPERADOR),
     OrderController.setDeliveredOrder);
 
+router.put('/reject', validate(OrderDto.orderRejectDto),
+    RoleAuthorization(RolEnum.ADMIN, RolEnum.OPERADOR),
+    OrderController.setRejectedOrder);
 
 const OrderRoutes = {
     router

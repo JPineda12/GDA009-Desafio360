@@ -1,9 +1,9 @@
 import { jwtDecode } from 'jwt-decode';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import UserInterface from '../interfaces/UserInterface';
 import { useNotification } from './NotificationProvider';
 import RolEnum from '../utils/RolEnum';
+import { UserInterface } from '../interfaces/UserInterface';
 
 interface AuthContextType {
     token: string | null;
@@ -25,10 +25,10 @@ export const useAuth = (): AuthContextType => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+    
     const [user, setUser] = useState<UserInterface | null>(token ? jwtDecode<UserInterface>(token) : null);
     const navigate = useNavigate();
     const { notify } = useNotification();
-
     useEffect(() => {
         if (token) {
             const decodedToken: any = jwtDecode(token);
@@ -66,7 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     const logout = () => {
-        localStorage.removeItem('cart');
+        localStorage.removeItem('shoppingCart');
         setToken(null);
         setUser(null);
         navigate('/auth/login');

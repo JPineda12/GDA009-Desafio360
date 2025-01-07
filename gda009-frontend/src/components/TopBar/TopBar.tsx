@@ -66,6 +66,10 @@ const TopBar: React.FC = () => {
                         <Box sx={{ flexGrow: 1 }}>
                             {user?.idRol === RolEnum.CLIENTE ?
                                 <>
+                                    <Button variant="outlined" color="inherit" startIcon={<FilterFramesIcon />}
+                                        sx={{ mr: 1 }} component={Link} to="/customer/orders">
+                                        Ordenes
+                                    </Button>
                                     <IconButton size="large"
                                         color="inherit" sx={{ m: "auto" }}
                                         onClick={handleCartClick}>
@@ -77,7 +81,8 @@ const TopBar: React.FC = () => {
                                 </>
                                 :
                                 <>
-                                    <Button variant="outlined" color="inherit" startIcon={<FilterFramesIcon />} sx={{ mr: 1 }}>
+                                    <Button variant="outlined" color="inherit" startIcon={<FilterFramesIcon />} 
+                                    sx={{ mr: 1 }}  component={Link} to="/operator/orders">
                                         Ordenes
                                     </Button>
                                     <Button variant="outlined" color="inherit"
@@ -96,6 +101,9 @@ const TopBar: React.FC = () => {
 
                             }
                         </Box>
+                        <Typography variant="h6" sx={{ mr: 5 }}>
+                            BIENVENIDO {user?.nombre}
+                        </Typography>
                         <Box sx={{ flexGrow: 0 }}>
                             <Button color="inherit" onClick={handleLogout} startIcon={<ExitToAppIcon />}>
                                 Cerrar Sesión

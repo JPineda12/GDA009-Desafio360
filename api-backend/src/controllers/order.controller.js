@@ -72,6 +72,15 @@ const OrderController = {
       next(error)
     }
   },
+
+  async setRejectedOrder(req, res, next) {
+    try {
+      const result = await OrderService.setRejectedOrder(req.body);
+      responseUtils.successResponse(res, 'Order rejected date set successfully', result, HttpStatusCode.OK)
+    } catch (error) {
+      next(error)
+    }
+  },  
 };
 
 export default OrderController;

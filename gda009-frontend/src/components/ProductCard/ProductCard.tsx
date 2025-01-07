@@ -8,6 +8,17 @@ import { ProductInterface } from '../../shared/interfaces/ProductInterface';
 const ProductCard: React.FC<{ product: ProductInterface }> = ({ product }) => {
     const { cartItems, setCartItems } = useCart();
 
+    function mapToCartItem(product: ProductInterface): CartItem {
+        return {
+            id: product.id,
+            nombre: product.nombre,
+            imagen_url: product.imagen_url || "",
+            marca: product.marca,
+            precio: product.precio,
+            cantidad: 1
+        };
+    }
+
     const handleCartClick = () => {
         const existingItem = cartItems.find(item => item.id === product.id);
         let shoppingCart: CartItem[];
@@ -19,7 +30,7 @@ const ProductCard: React.FC<{ product: ProductInterface }> = ({ product }) => {
                     : item
             );
         } else {
-            shoppingCart = [...cartItems, { ...product, cantidad: 1 }];
+            shoppingCart = [...cartItems, mapToCartItem(product)];
         }
         setCartItems(shoppingCart);
     };
@@ -46,10 +57,13 @@ const ProductCard: React.FC<{ product: ProductInterface }> = ({ product }) => {
                     {product.nombre}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                    {product.marca}
+                    {product.categoria} - {product.marca}
                 </Typography>
+                <Typography variant="body2" color="text.secondary">
+                    {product.codigo} - Stock: {product.stock}
+                </Typography>                
                 <Typography variant="subtitle1" color="primary">
-                    ${product.precio.toFixed(2)}
+                    Q.{product.precio.toFixed(2)}
                 </Typography>
             </CardContent>
             <CardActions>
